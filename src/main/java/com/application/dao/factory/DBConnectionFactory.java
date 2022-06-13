@@ -14,9 +14,6 @@ public class DBConnectionFactory {
         String url = propertyService.getString("URL");
         String user = propertyService.getString("USER");
         String password = propertyService.getString("PASSWORD");
-//        String url = propertyService.getStringOrDefault("URL", "jdbc:mysql://localhost/newdep?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC");
-//        String user = propertyService.getStringOrDefault("USER", "root");
-//        String password = propertyService.getStringOrDefault("PASSWORD", "password");
 
         DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
         return DriverManager.getConnection(url, user, password);

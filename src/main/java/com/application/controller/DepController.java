@@ -21,8 +21,19 @@ public class DepController extends HttpServlet {
             request.setAttribute("departments", allDepartments);
             request.getRequestDispatcher("/WEB-INF/jsp/departments-list.jsp").forward(request, response);
         }
+
+        if("/department/create".equals(request.getServletPath())) {
+            request.getRequestDispatcher("/WEB-INF/jsp/create-edit-department.jsp").forward(request, response);
+        }
     }
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/jsp/departments-list.jsp").forward(request, response);
+        if ("/departments".equals(request.getServletPath())) {
+            request.getRequestDispatcher("/WEB-INF/jsp/departments-list.jsp").forward(request, response);
+        }
+
+        if("/department/create".equals(request.getServletPath())) {
+            departmentService.createDepartment(request);
+            response.sendRedirect(request.getContextPath() + "/departments");
+        }
     }
 }

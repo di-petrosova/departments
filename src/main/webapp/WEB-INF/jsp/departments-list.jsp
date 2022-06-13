@@ -28,6 +28,13 @@
             <td>${department.adress}</td>
         </tr>
     </c:forEach>
+    <tr>
+        <td>
+            <form action="${pageContext.request.contextPath}/department/create" method="get">
+                <button type="submit">Create department</button>
+            </form>
+        </td>
+    </tr>
     </tbody>
 </table>
 </body>
