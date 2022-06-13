@@ -24,7 +24,7 @@ public class Hello extends HttpServlet
                       HttpServletResponse response)
             throws IOException, ServletException
     {
-        request.getRequestDispatcher("/WEB-INF/jsp/hello.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/jsp/departments-list.jsp").forward(request, response);
     }
 
     @Override
@@ -32,6 +32,6 @@ public class Hello extends HttpServlet
                        HttpServletResponse response)
             throws IOException, ServletException
     {
-        request.getRequestDispatcher("/WEB-INF/jsp/hello.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/jsp/departments-list.jsp").forward(request, response);
     }
 }

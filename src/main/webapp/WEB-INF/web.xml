@@ -18,4 +18,12 @@
     <url-pattern>/hello</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>depControllerServlet</servlet-name>
+    <servlet-class>com.application.controller.DepController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>depControllerServlet</servlet-name>
+    <url-pattern>/departments</url-pattern>
+  </servlet-mapping>
 </web-app>
