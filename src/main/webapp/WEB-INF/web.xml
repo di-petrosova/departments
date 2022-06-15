@@ -35,4 +35,13 @@
     <servlet-name>depCreationServlet</servlet-name>
     <url-pattern>/department/create</url-pattern>
   </servlet-mapping>
+
+  <servlet>
+    <servlet-name>depEditionServlet</servlet-name>
+    <servlet-class>com.application.controller.DepController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>depEditionServlet</servlet-name>
+    <url-pattern>/department/edit</url-pattern>
+  </servlet-mapping>
 </web-app>

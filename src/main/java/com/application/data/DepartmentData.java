@@ -5,7 +5,7 @@ public class DepartmentData {
     private int id;
 
     private String name;
-    private int adress;
+    private int address;
 
     public int getDepPK() {
         return PK;
@@ -31,11 +31,11 @@ public class DepartmentData {
         this.name = name;
     }
 
-    public int getAdress() {
-        return adress;
+    public int getAddress() {
+        return address;
     }
 
-    public void setAddress(int adress) {
-        this.adress = adress;
+    public void setAddress(int address) {
+        this.address = address;
     }
 }

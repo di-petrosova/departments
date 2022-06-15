@@ -6,6 +6,7 @@ import com.application.service.impl.DefaultDepartmentService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +26,15 @@ public class DepController extends HttpServlet {
         if("/department/create".equals(request.getServletPath())) {
             request.getRequestDispatcher("/WEB-INF/jsp/create-edit-department.jsp").forward(request, response);
         }
+
+        if("/department/edit".equals(request.getServletPath())) {
+            String idToEdit = request.getParameter("idToEdit");
+            DepartmentData departmentById = departmentService.getDepartmentById(idToEdit);
+            if(Objects.nonNull(departmentById)) {
+                request.setAttribute("currentDepartment", departmentService.getDepartmentById(idToEdit));
+            }
+            request.getRequestDispatcher("/WEB-INF/jsp/create-edit-department.jsp").forward(request, response);
+        }
     }
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if ("/departments".equals(request.getServletPath())) {
@@ -33,6 +43,12 @@ public class DepController extends HttpServlet {
 
         if("/department/create".equals(request.getServletPath())) {
             departmentService.createDepartment(request);
+            response.sendRedirect(request.getContextPath() + "/departments");
+        }
+
+        if("/department/edit".equals(request.getServletPath())) {
+
+            departmentService.editDepartment(request);
             response.sendRedirect(request.getContextPath() + "/departments");
         }
     }

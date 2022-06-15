@@ -6,8 +6,10 @@ import java.util.Map;
 public interface DepartmentsDAO {
     ResultSet getAllDepartments();
 
-    void createDepartmentDAO(Map<String, String> department);
+    void createDepartment(Map<String, String> department);
+    void editDepartmentDAO(Map<String, String> department);
 
     boolean checkExistingDepartmentPK(String pk);
     boolean checkExistingDepartmentId(String id);
+    ResultSet getDepartmentForId(String id);
 }

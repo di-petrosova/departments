@@ -27,9 +27,22 @@ public class DefaultDepartmentDAO implements DepartmentsDAO {
     }
 
     @Override
-    public void createDepartmentDAO(Map<String, String> department) {
+    public void createDepartment(Map<String, String> department) {
 
-        String query = "INSERT newdep.departments (pk, id, name, adress)values (\'" + department.get("pk") + "\',\'" + department.get("id") + "\',\'" + department.get("name") + "\',\'" + department.get("adress") + "\')";
+        String query = "INSERT newdep.departments (pk, id, name, adress)values (\'" + department.get("pk") + "\',\'" + department.get("id") + "\',\'" + department.get("name") + "\',\'" + department.get("address") + "\')";
+
+        try {
+            Connection connection = DBConnectionFactory.establishConnection();
+            Statement statement = connection.createStatement();
+            statement.execute(query);
+        } catch (SQLException e) {
+
+        }
+    }
+
+    @Override
+    public void editDepartmentDAO(Map<String, String> department) {
+        String query = "UPDATE newdep.departments SET name = \'" + department.get("name") + "\', adress =\'" + department.get("address") + "\'" + " WHERE id='"+ department.get("id")+"\'";
 
         try {
             Connection connection = DBConnectionFactory.establishConnection();
@@ -82,5 +95,25 @@ public class DefaultDepartmentDAO implements DepartmentsDAO {
 
         }
         return ifExist == 1;
+    }
+
+    @Override
+    public ResultSet getDepartmentForId(String id) {
+        String query = "SELECT * FROM newdep.departments WHERE id=\'" + id + "\'";
+        ResultSet rs = null;
+
+        try
+        {
+            Connection connection = DBConnectionFactory.establishConnection();
+            Statement statement = connection.createStatement();
+            rs = statement.executeQuery(query);
+
+        }
+        catch (SQLException e)
+        {
+//            LOG.error("Read from database was failed", e);
+
+        }
+        return rs;
     }
 }

@@ -25,17 +25,19 @@
         <tr>
             <td>${department.id}</td>
             <td>${department.name}</td>
-            <td>${department.adress}</td>
+            <td>${department.address}</td>
+            <td>
+                <form action="${pageContext.request.contextPath}/department/edit" method="get">
+                    <input name="idToEdit" type="text" value="${department.id}" hidden>
+                    <button type="submit" class="btn btn-primary">Edit</button>
+                </form>
+            </td>
         </tr>
     </c:forEach>
-    <tr>
-        <td>
-            <form action="${pageContext.request.contextPath}/department/create" method="get">
-                <button type="submit">Create department</button>
-            </form>
-        </td>
-    </tr>
     </tbody>
 </table>
+<form action="${pageContext.request.contextPath}/department/create" method="get">
+    <button type="submit" class="btn btn-primary">Create department</button>
+</form>
 </body>
 </html>

@@ -75,7 +75,7 @@ public class DefaultDepartmentService implements DepartmentService {
         department.put("pk", req.getParameter("pk"));
         department.put("id", req.getParameter("id"));
         department.put("name", req.getParameter("name"));
-        department.put("adress", req.getParameter("adress"));
+        department.put("address", req.getParameter("address"));
 
         return department;
     }
@@ -86,6 +86,22 @@ public class DefaultDepartmentService implements DepartmentService {
         Map<String, String> newDepartment = convertRequestToMap(req);
         newDepartment.put("pk", getRandomPK());
         newDepartment.put("id", getRandomId());
-        departmentsDAO.createDepartmentDAO(newDepartment);
+        departmentsDAO.createDepartment(newDepartment);
+    }
+
+    @Override
+    public void editDepartment(HttpServletRequest req) {
+        departmentsDAO.editDepartmentDAO(convertRequestToMap(req));
+    }
+
+    public DepartmentData getDepartmentById(String idToEdit)
+    {
+        ResultSet resultSet = departmentsDAO.getDepartmentForId(idToEdit);
+        List<DepartmentData> departmentDataList = convertToDepartmentList(resultSet);
+        if(departmentDataList.isEmpty()) {
+            return null;
+        }
+
+        return departmentDataList.get(0);
     }
 }
