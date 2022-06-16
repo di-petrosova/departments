@@ -7,9 +7,16 @@ import java.util.List;
 
 public interface DepartmentService {
     List<DepartmentData> getAllDepartments();
+
     void createDepartment(HttpServletRequest req);
+
     void editDepartment(HttpServletRequest req);
+
     String getRandomPK();
+
     String getRandomId();
+
     DepartmentData getDepartmentById(String id);
+
+    List<DepartmentData> removeDepartment(String id);
 }

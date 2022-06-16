@@ -38,6 +38,10 @@ public class DepController extends HttpServlet {
     }
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if ("/departments".equals(request.getServletPath())) {
+            String idToRemove = request.getParameter("idToRemove");
+            List<DepartmentData> leftDepartments = departmentService.removeDepartment(idToRemove);
+
+            request.setAttribute("departments", leftDepartments);
             request.getRequestDispatcher("/WEB-INF/jsp/departments-list.jsp").forward(request, response);
         }
 

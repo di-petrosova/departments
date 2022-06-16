@@ -109,4 +109,17 @@ public class DefaultDepartmentDAO implements DepartmentsDAO {
         }
         return rs;
     }
+
+    @Override
+    public void removeDepartment(String id) {
+        String query = "DELETE FROM departments WHERE id=\'" + id + "\'";
+        ResultSet rs = null;
+        try {
+            Connection connection = DBConnectionFactory.establishConnection();
+            Statement statement = connection.createStatement();
+            statement.execute(query);
+        } catch (SQLException e) {
+            LOGGER.error("Remove from database was failed");
+        }
+    }
 }
