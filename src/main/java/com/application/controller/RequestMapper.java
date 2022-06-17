@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.application.controller.CoreConstants.DEPARTMENTS;
+import static com.application.controller.CoreConstants.EMPLOYEES;
 
 public class RequestMapper extends HttpServlet {
 
@@ -16,8 +17,11 @@ public class RequestMapper extends HttpServlet {
 
     static {
         requestMapper.put(DEPARTMENTS, new DepController());
-        requestMapper.put(DEPARTMENTS + "/edit", new DepController());
-        requestMapper.put(DEPARTMENTS+ "/create", new DepController());
+        requestMapper.put("/department/edit", new DepController());
+        requestMapper.put("/department/create", new DepController());
+        requestMapper.put(EMPLOYEES, new EmpController());
+        requestMapper.put("/employee/edit", new EmpController());
+        requestMapper.put("/employee/create", new EmpController());
     }
 
     @Override

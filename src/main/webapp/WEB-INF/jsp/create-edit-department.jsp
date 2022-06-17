@@ -3,8 +3,9 @@
 <html>
 <head>
     <title>Create department</title>
+    <link rel='stylesheet' type='text/css' href='${pageContext.request.contextPath}/css/bootstrap.min.css'>
 </head>
-<body>
+<body class="m-5">
 <c:set var="uri" value="${requestScope['javax.servlet.forward.request_uri']}"></c:set>
 <c:set var="edit" value="/newdep/department/edit"></c:set>
 <c:set var="create" value="/newdep/department/create"></c:set>
@@ -35,11 +36,11 @@
         </p>
 
         <c:if test="${uri eq edit}">
-            <button type="submit">Save</button>
+            <button type="submit"  class="btn btn-primary">Save</button>
         </c:if>
 
         <c:if test="${uri eq create}">
-            <button type="submit">Create department</button>
+            <button type="submit"  class="btn btn-primary">Create department</button>
         </c:if>
     </form>
 
