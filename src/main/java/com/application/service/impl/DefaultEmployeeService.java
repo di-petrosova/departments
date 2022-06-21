@@ -1,23 +1,24 @@
 package com.application.service.impl;
 
-import com.application.dao.DepartmentsDAO;
 import com.application.dao.EmployeesDAO;
-import com.application.dao.impl.DefaultDepartmentDAO;
 import com.application.dao.impl.DefaultEmployeesDAO;
 import com.application.data.EmployeeData;
 import com.application.service.EmployeeService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DefaultEmployeeService implements EmployeeService {
 
-        private static final Logger LOG = LogManager.getLogger(DefaultEmployeeService.class);
+    private static final Logger LOG = LogManager.getLogger(DefaultEmployeeService.class);
     private EmployeesDAO employeesDAO = new DefaultEmployeesDAO();
 
     @Override
@@ -26,7 +27,7 @@ public class DefaultEmployeeService implements EmployeeService {
         return convertToEmployeeList(rs);
     }
 
-    private List<EmployeeData> convertToEmployeeList(ResultSet resultSet) {
+    public List<EmployeeData> convertToEmployeeList(ResultSet resultSet) {
         List<EmployeeData> employeeDataList = new ArrayList<>();
         try {
             while (resultSet.next()) {
@@ -50,4 +51,75 @@ public class DefaultEmployeeService implements EmployeeService {
 
         return employeeDataList;
     }
+
+    @Override
+    public EmployeeData getEmployeeById(String id) {
+        ResultSet resultSet = employeesDAO.getEmployeeForId(id);
+        List<EmployeeData> employeeDataList = convertToEmployeeList(resultSet);
+        if (employeeDataList.isEmpty()) {
+            return null;
+        }
+        return employeeDataList.get(0);
+    }
+
+    @Override
+    public boolean checkExistingDepartmentId(String id) {
+        ResultSet allEmployees = employeesDAO.getAllEmployees();
+        List<EmployeeData> employeeDataList = new ArrayList<>();
+        try {
+            while (allEmployees.next()) {
+                EmployeeData employeeData = new EmployeeData();
+                employeeData.setEmpId(allEmployees.getInt(1));
+                employeeDataList.add(employeeData);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        for (int i = 0; i < employeeDataList.size(); i++) {
+            if (employeeDataList.get(i).equals(id)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public Map<String, String> convertRequestToMap(HttpServletRequest req) {
+        Map<String, String> employee = new HashMap<>();
+        employee.put("empId", req.getParameter("id"));
+        employee.put("empFirstName", req.getParameter("empFirstName"));
+        employee.put("empLastName", req.getParameter("empLastName"));
+        employee.put("dateBirth", req.getParameter("dateBirth"));
+        employee.put("empAge", req.getParameter("empAge"));
+        employee.put("empEmail", req.getParameter("empEmail"));
+        employee.put("photo", req.getParameter("photo"));
+        employee.put("createdDate", req.getParameter("createdDate"));
+        employee.put("modifiedDate", req.getParameter("modifiedDate"));
+        employee.put("empExperience", req.getParameter("empExperience"));
+        employee.put("departmentId", req.getParameter("departmentId"));
+        return employee;
+    }
+
+    @Override
+    public void editEmployee(HttpServletRequest req) {
+        employeesDAO.editEmployee(convertRequestToMap(req));
+    }
+    public boolean checkExistingEmployeeEmail(String email)
+    {
+        return employeesDAO.checkExistingEmployeeEmail(email);
+    }
+
+    public String getRandomId() {
+        String randomId;
+        int intId;
+        do {
+            intId = (int) (Math.random() * 10000);
+            randomId = String.valueOf(intId);
+        }
+        while (employeesDAO.checkExistingEmployeeId(randomId));
+        return randomId;
+    }
+
 }
