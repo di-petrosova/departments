@@ -122,4 +122,18 @@ public class DefaultEmployeesDAO implements EmployeesDAO {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public void removeEmployee(String id) {
+        String query = "DELETE FROM employees WHERE id=\'" + id + "\'";
+        ResultSet rs = null;
+        try{
+            Connection connection = DBConnectionFactory.establishConnection();
+            Statement statement = connection.createStatement();
+            statement.execute(query);
+        }
+        catch (SQLException e) {
+            LOGGER.error("Delete from database was failed", e);
+        }
+    }
 }

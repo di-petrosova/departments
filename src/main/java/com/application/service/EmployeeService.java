@@ -17,11 +17,16 @@ public interface EmployeeService {
     List<EmployeeData> convertToEmployeeList(ResultSet resultSet);
 
     EmployeeData getEmployeeById(String id);
+
     boolean checkExistingDepartmentId(String id);
+
     boolean checkExistingEmployeeEmail(String email);
+
     String getRandomId();
 
     void createEmployee(HttpServletRequest req);
 
     EmployeeData convertRequestToEmployee(HttpServletRequest req);
+
+    List<EmployeeData> removeEmployee(String id);
 }

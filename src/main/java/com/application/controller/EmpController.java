@@ -52,6 +52,9 @@ public class EmpController implements Controller {
         req.setAttribute("existingDepartmentId", employeeService.checkExistingDepartmentId(idToEdit));
         EmployeeData currentEmployee = employeeService.getEmployeeById(idToEdit);
         if (EMPLOYEES.equals(req.getServletPath())) {
+            String idToRemove = req.getParameter("idToRemove");
+            List<EmployeeData> leftEmployees = employeeService.removeEmployee(idToRemove);
+            req.setAttribute("employees", leftEmployees);
             req.getRequestDispatcher("/WEB-INF/jsp/employee-list.jsp").forward(req, resp);
         }
         if ("/employee/edit".equals(req.getServletPath())) {

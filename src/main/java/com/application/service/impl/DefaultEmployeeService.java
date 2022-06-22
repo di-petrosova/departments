@@ -160,5 +160,10 @@ public class DefaultEmployeeService implements EmployeeService {
         return employeeData;
     }
 
+    @Override
+    public List<EmployeeData> removeEmployee(String id) {
+        employeesDAO.removeEmployee(id);
+        return getAllEmployees();
+    }
 
 }

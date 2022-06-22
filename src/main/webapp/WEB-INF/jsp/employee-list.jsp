@@ -65,12 +65,12 @@
                     <button class="btn btn-primary">Edit</button>
                 </form>
             </td>
-                <%--<td>
-                    <form action="${pageContext.request.contextPath}/employees" method="post">
-                        <input name="idToRemove" type="text" value="${employee.emplId}" hidden>
-                        <button  class="btn btn-danger">Remove</button>
-                    </form>
-                </td>--%>
+            <td>
+                <form action="${pageContext.request.contextPath}/employees" method="post">
+                    <input name="idToRemove" type="text" value="${employee.empId}" hidden>
+                    <button class="btn btn-danger">Remove</button>
+                </form>
+            </td>
         </tr>
     </c:forEach>
     </tbody>
