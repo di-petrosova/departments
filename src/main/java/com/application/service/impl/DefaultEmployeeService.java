@@ -12,6 +12,7 @@ import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,12 +36,12 @@ public class DefaultEmployeeService implements EmployeeService {
                 employeeData.setEmpId(resultSet.getInt(1));
                 employeeData.setEmpFirstName(resultSet.getString(2));
                 employeeData.setEmpLastName(resultSet.getString(3));
-                employeeData.setDateBirth(resultSet.getDate(4));
+                employeeData.setDateBirth(String.valueOf(resultSet.getDate(4)));
                 employeeData.setEmpAge(resultSet.getInt(5));
                 employeeData.setEmpEmail(resultSet.getString(6));
                 employeeData.setPhoto(new File(resultSet.getString(7)));
-                employeeData.setCreatedDate(resultSet.getDate(8));
-                employeeData.setModifiedDate(resultSet.getDate(9));
+                employeeData.setCreatedDate(String.valueOf(resultSet.getDate(8)));
+                employeeData.setModifiedDate(String.valueOf(resultSet.getDate(9)));
                 employeeData.setEmpExperience(resultSet.getBoolean(10));
                 employeeData.setDepartmentId(resultSet.getInt(11));
                 employeeDataList.add(employeeData);
@@ -121,5 +122,43 @@ public class DefaultEmployeeService implements EmployeeService {
         while (employeesDAO.checkExistingEmployeeId(randomId));
         return randomId;
     }
+
+    @Override
+    public void createEmployee(HttpServletRequest req) {
+        Map<String, String> newEmployee = convertRequestToMap(req);
+        newEmployee.put("empId", getRandomId());
+        employeesDAO.createEmployee(newEmployee);
+    }
+
+    @Override
+    public EmployeeData convertRequestToEmployee(HttpServletRequest req) {
+        EmployeeData employeeData = new EmployeeData();
+        try {
+            employeeData.setEmpId(Integer.parseInt(req.getParameter("id")));
+        } catch (NumberFormatException e) {
+
+        }
+        try {
+            employeeData.setDepartmentId(Integer.parseInt(req.getParameter("departmentId")));
+        } catch (NumberFormatException e) {
+
+        }
+        try {
+            employeeData.setEmpAge(Integer.parseInt(req.getParameter("empAge")));
+        } catch (NumberFormatException e) {
+
+        }
+        employeeData.setEmpFirstName(req.getParameter("empFirstName"));
+        employeeData.setEmpLastName(req.getParameter("empLastName"));
+        employeeData.setDateBirth(req.getParameter("dateBirth"));
+
+        employeeData.setEmpEmail(req.getParameter("empEmail"));
+        employeeData.setPhoto(new File(req.getParameter("photo")));
+        employeeData.setCreatedDate(req.getParameter("createdDate"));
+        employeeData.setModifiedDate(req.getParameter("modifiedDate"));
+        employeeData.setEmpExperience(Boolean.parseBoolean(req.getParameter("empExperience")));
+        return employeeData;
+    }
+
 
 }

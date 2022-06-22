@@ -20,4 +20,8 @@ public interface EmployeeService {
     boolean checkExistingDepartmentId(String id);
     boolean checkExistingEmployeeEmail(String email);
     String getRandomId();
+
+    void createEmployee(HttpServletRequest req);
+
+    EmployeeData convertRequestToEmployee(HttpServletRequest req);
 }

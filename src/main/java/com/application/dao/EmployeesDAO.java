@@ -13,4 +13,6 @@ public interface EmployeesDAO {
     boolean checkExistingEmployeeEmail(String email);
 
     boolean checkExistingEmployeeId(String id);
+
+    void createEmployee(Map<String, String> employee);
 }

@@ -1,18 +1,17 @@
 package com.application.data;
 
 import java.io.File;
-import java.util.Date;
 
 public class EmployeeData {
     private int empId;
     private String empFirstName;
     private String empLastName;
-    private Date dateBirth;
+    private String dateBirth;
     private int empAge;
     private String empEmail;
     private File photo;
-    private Date createdDate;
-    private Date modifiedDate;
+    private String createdDate;
+    private String modifiedDate;
     private boolean empExperience;
     private int departmentId;
 
@@ -40,11 +39,11 @@ public class EmployeeData {
         this.empLastName = empLastName;
     }
 
-    public Date getDateBirth() {
+    public String getDateBirth() {
         return dateBirth;
     }
 
-    public void setDateBirth(Date dateBirth) {
+    public void setDateBirth(String dateBirth) {
         this.dateBirth = dateBirth;
     }
 
@@ -72,19 +71,19 @@ public class EmployeeData {
         this.photo = photo;
     }
 
-    public Date getCreatedDate() {
+    public String getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(Date createdDate) {
+    public void setCreatedDate(String createdDate) {
         this.createdDate = createdDate;
     }
 
-    public Date getModifiedDate() {
+    public String getModifiedDate() {
         return modifiedDate;
     }
 
-    public void setModifiedDate(Date modifiedDate) {
+    public void setModifiedDate(String modifiedDate) {
         this.modifiedDate = modifiedDate;
     }
 

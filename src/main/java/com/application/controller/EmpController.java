@@ -22,17 +22,24 @@ public class EmpController implements Controller {
     private EmployeeService employeeService = new DefaultEmployeeService();
     private EmployeesDAO employeesDAO = new DefaultEmployeesDAO();
     private DepartmentService departmentService = new DefaultDepartmentService();
+    List<DepartmentData> allDepartments = departmentService.getAllDepartments();
     @Override
     public void processGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String idToEdit = req.getParameter("idToEdit");
+        EmployeeData currentEmployee = employeeService.getEmployeeById(idToEdit);
+
         if (EMPLOYEES.equals(req.getServletPath())) {
             List<EmployeeData> allEmployees = employeeService.getAllEmployees();
             req.setAttribute("employees", allEmployees);
             req.getRequestDispatcher("/WEB-INF/jsp/employee-list.jsp").forward(req, resp);
         }
         if ("/employee/edit".equals(req.getServletPath())) {
-            EmployeeData currentEmployee = employeeService.getEmployeeById(idToEdit);
-            List<DepartmentData> allDepartments = departmentService.getAllDepartments();
+            req.setAttribute("departments", allDepartments);
+            req.setAttribute("currentEmployee", currentEmployee);
+            req.getRequestDispatcher("/WEB-INF/jsp/create-edit-employee.jsp").forward(req, resp);
+        }
+        if ("/employee/create".equals(req.getServletPath()))
+        {
             req.setAttribute("departments", allDepartments);
             req.setAttribute("currentEmployee", currentEmployee);
             req.getRequestDispatcher("/WEB-INF/jsp/create-edit-employee.jsp").forward(req, resp);
@@ -43,6 +50,7 @@ public class EmpController implements Controller {
     public void processPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String idToEdit = req.getParameter("id");
         req.setAttribute("existingDepartmentId", employeeService.checkExistingDepartmentId(idToEdit));
+        EmployeeData currentEmployee = employeeService.getEmployeeById(idToEdit);
         if (EMPLOYEES.equals(req.getServletPath())) {
             req.getRequestDispatcher("/WEB-INF/jsp/employee-list.jsp").forward(req, resp);
         }
@@ -53,8 +61,10 @@ public class EmpController implements Controller {
 
 
             if (employeeService.checkExistingEmployeeEmail(email)) {
+                req.setAttribute("departments", allDepartments);
                 req.setAttribute("wrongEmail", email);
                 req.setAttribute("editedEmployee", employeeService.getEmployeeById(idToEdit));
+                req.setAttribute("currentEmployee", currentEmployee);
                 if (email.equals(employeeById.getEmpEmail())) {
                     employeeService.editEmployee(req);
                     resp.sendRedirect(req.getContextPath() + EMPLOYEES);
@@ -64,6 +74,19 @@ public class EmpController implements Controller {
             } else {
                 req.setAttribute("employeeId", employeeService.getRandomId());
                 employeeService.editEmployee(req);
+                resp.sendRedirect(req.getContextPath() + EMPLOYEES);
+            }
+        }
+        if ("/employee/create".equals(req.getServletPath())) {
+            String email = req.getParameter("empEmail");
+            if(employeeService.checkExistingEmployeeEmail(email)) {
+                req.setAttribute("departments", allDepartments);
+                req.setAttribute("wrongEmail", email);
+                req.setAttribute("createdEmployee", employeeService.convertRequestToEmployee(req));
+                req.getRequestDispatcher("/WEB-INF/jsp/create-edit-employee.jsp").forward(req, resp);
+            } else {
+                req.setAttribute("employeeId", employeeService.getRandomId());
+                employeeService.createEmployee(req);
                 resp.sendRedirect(req.getContextPath() + EMPLOYEES);
             }
         }

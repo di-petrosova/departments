@@ -104,4 +104,22 @@ public class DefaultEmployeesDAO implements EmployeesDAO {
         }
         return ifExist == 1;
     }
+
+    @Override
+    public void createEmployee(Map<String, String> employee) {
+        String query = "INSERT employees (id, firstname, lastname, dateBirth, age, email, photo, createdDate, modifiedDate, experience, departmentId)" +
+                " VALUES ('" + employee.get("empId") + "\', \'" + employee.get("empFirstName") +
+                "\', \'" + employee.get("empLastName") + "\', \'" + employee.get("dateBirth") +
+                "\', (SELECT TIMESTAMPDIFF(YEAR, \'" + employee.get("dateBirth") + "\', CURDATE()) AS age), \'" + employee.get("empEmail") + "\', \'" + employee.get("photo") + "\', now(), now(), " +
+                employee.get("empExperience") + ", \'" + employee.get("departmentId") + "\');";
+        try {
+            Connection connection = DBConnectionFactory.establishConnection();
+            Statement statement = connection.createStatement();
+            statement.execute(query);
+
+        } catch (SQLException e) {
+            LOGGER.error("Read from database was failed");
+            throw new RuntimeException(e);
+        }
+    }
 }
