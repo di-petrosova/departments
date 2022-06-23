@@ -3,7 +3,7 @@
 <html>
 <head>
     <title>Create/edit employee</title>
-    <link rel='stylesheet' type='text/css' href='${pageContext.request.contextPath}/css/bootstrap.min.css'>
+    <link rel='stylesheet' type='text/css' href='/css/bootstrap.min.css'>
 </head>
 <body>
 <c:set var="uri" value="${requestScope['javax.servlet.forward.request_uri']}"></c:set>
