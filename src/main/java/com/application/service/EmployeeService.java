@@ -3,6 +3,8 @@ package com.application.service;
 import com.application.data.EmployeeData;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.ResultSet;
 import java.util.List;
 import java.util.Map;
@@ -29,4 +31,10 @@ public interface EmployeeService {
     EmployeeData convertRequestToEmployee(HttpServletRequest req);
 
     List<EmployeeData> removeEmployee(String id);
+
+    String gettingEmployeePhoto();
+
+    InputStream getEmployeePhoto(String id);
+
+    InputStream ifPhotoExists(String id);
 }

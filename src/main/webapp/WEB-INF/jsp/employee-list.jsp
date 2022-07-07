@@ -42,6 +42,9 @@
         <th>
             Department Id
         </th>
+        <th>
+            Temp
+        </th>
         <th/>
     </tr>
     </thead>
@@ -59,6 +62,8 @@
             <td>${employee.modifiedDate}</td>
             <td>${employee.empExperience}</td>
             <td>${employee.departmentId}</td>
+<%--            <td><img style="width: 100px; height: auto" src="data:image/jpeg;base64,${employee.tempphoto}"/></td>--%>
+            <td><img  style="width: 100px; height: auto" src="${pageContext.request.contextPath}/employee/photo/${employee.empId}.jpeg"/></td>
             <td>
                 <form action="${pageContext.request.contextPath}/employee/edit" method="get">
                     <input name="idToEdit" type="text" value="${employee.empId}" hidden>

@@ -3,19 +3,18 @@
 <html>
 <head>
     <title>Create/edit employee</title>
-    <link rel='stylesheet' type='text/css' href='/css/bootstrap.min.css'>
+    <link rel='stylesheet' type='text/css' href='${pageContext.request.contextPath}/css/bootstrap.min.css'>
 </head>
 <body>
 <c:set var="uri" value="${requestScope['javax.servlet.forward.request_uri']}"></c:set>
 <c:set var="edit" value="/newdep/employee/edit"></c:set>
 <c:set var="create" value="/newdep/employee/create"></c:set>
-
 <c:if test="${uri eq edit}">
-<form action="${pageContext.request.contextPath}/employee/edit" method="post">
+<form action="${pageContext.request.contextPath}/employee/edit" method="post" class="m-5">
     </c:if>
 
     <c:if test="${uri eq create}">
-    <form action="${pageContext.request.contextPath}/employee/create" method="post">
+    <form action="${pageContext.request.contextPath}/employee/create" method="post" class="m-5">
         </c:if>
 
         <c:if test="${uri eq edit}">
@@ -68,14 +67,7 @@
                 </c:if>
             </c:if>
         </p>
-        <p>
-            <label for="photo">Photo</label>
 
-            <c:if test="${uri eq create}"><input type="text" id="photo" name="photo"
-                                                 value="${createdEmployee.photo}"></c:if>
-            <c:if test="${uri eq edit}"><input type="text" id="photo" name="photo"
-                                               value="${currentEmployee.photo}"></c:if>
-        </p>
         <c:if test="${uri eq create}">
             <p>
                 <label for="empExperience">Experience</label>
@@ -148,5 +140,16 @@
         </c:if>
     </form>
 
+        <c:if test="${uri eq edit}">
+        <form action="${pageContext.request.contextPath}/employee/edit-photo?id=${currentEmployee.empId}" method="post" enctype="multipart/form-data" class="m-5">
+
+            <p>
+                <label for="photo">Photo</label>
+                <input type="file" id="photo" name="photo" value="${currentEmployee.photo}">
+            </p>
+            <button type="submit" class="btn btn-primary">Edit image</button>
+
+        </form>
+        </c:if>
 </body>
 </html>

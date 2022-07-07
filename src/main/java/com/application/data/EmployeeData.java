@@ -10,6 +10,8 @@ public class EmployeeData {
     private int empAge;
     private String empEmail;
     private File photo;
+
+    private String tempphoto;
     private String createdDate;
     private String modifiedDate;
     private boolean empExperience;
@@ -101,5 +103,13 @@ public class EmployeeData {
 
     public void setDepartmentId(int departmentId) {
         this.departmentId = departmentId;
+    }
+
+    public String getTempphoto() {
+        return tempphoto;
+    }
+
+    public void setTempphoto(String tempphoto) {
+        this.tempphoto = tempphoto;
     }
 }

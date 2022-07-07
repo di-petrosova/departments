@@ -1,9 +1,11 @@
 package com.application.dao;
 
+import java.io.InputStream;
 import java.sql.ResultSet;
 import java.util.Map;
 
 public interface EmployeesDAO {
+
     ResultSet getAllEmployees();
 
     void editEmployee(Map<String, String> employee);
@@ -17,4 +19,11 @@ public interface EmployeesDAO {
     void createEmployee(Map<String, String> employee);
 
     void removeEmployee(String id);
+
+    void editEmployeePhoto(InputStream inputStream, String id);
+
+    byte[] gettingEmployeePhoto();
+
+    InputStream getEmployeePhoto(String id);
+
 }

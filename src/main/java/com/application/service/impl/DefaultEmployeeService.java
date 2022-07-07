@@ -9,10 +9,16 @@ import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +50,7 @@ public class DefaultEmployeeService implements EmployeeService {
                 employeeData.setModifiedDate(String.valueOf(resultSet.getDate(9)));
                 employeeData.setEmpExperience(resultSet.getBoolean(10));
                 employeeData.setDepartmentId(resultSet.getInt(11));
+//                employeeData.setTempphoto((Base64.getEncoder().encodeToString(resultSet.getBytes(12))));
                 employeeDataList.add(employeeData);
             }
         } catch (SQLException e) {
@@ -100,6 +107,7 @@ public class DefaultEmployeeService implements EmployeeService {
         employee.put("modifiedDate", req.getParameter("modifiedDate"));
         employee.put("empExperience", req.getParameter("empExperience"));
         employee.put("departmentId", req.getParameter("departmentId"));
+        employee.put("tempphoto", req.getParameter("tempphoto"));
         return employee;
     }
 
@@ -107,8 +115,8 @@ public class DefaultEmployeeService implements EmployeeService {
     public void editEmployee(HttpServletRequest req) {
         employeesDAO.editEmployee(convertRequestToMap(req));
     }
-    public boolean checkExistingEmployeeEmail(String email)
-    {
+
+    public boolean checkExistingEmployeeEmail(String email) {
         return employeesDAO.checkExistingEmployeeEmail(email);
     }
 
@@ -166,4 +174,54 @@ public class DefaultEmployeeService implements EmployeeService {
         return getAllEmployees();
     }
 
+    private void saveFile(String id) throws IOException {
+        InputStream inputStream = employeesDAO.getEmployeePhoto(id);
+        String path = "/home/diana/Downloads/1234.txt";
+        File file = new File(path);
+        if (file.exists()) {
+            file.delete();
+        }
+
+        OutputStream outputStream = new FileOutputStream(file);
+        byte[] buf = new byte[8192];
+        int length;
+        while ((length = inputStream.read(buf)) > 0) {
+            outputStream.write(buf, 0, length);
+        }
+    }
+
+    public String gettingEmployeePhoto() {
+        return Base64.getEncoder().encodeToString(employeesDAO.gettingEmployeePhoto());
+    }
+
+    public InputStream getEmployeePhoto(String id) {
+        return employeesDAO.getEmployeePhoto(id);
+    }
+
+    private InputStream gettingPhoto() {
+        String resource = getClass().getClassLoader().getResource("").toString();
+        String delete = "WEB-INF/classes/";
+        String deleteFile = "file:";
+        String subPath = resource.replace(delete, "").replace(deleteFile, "");
+        String path  = subPath + "images/photo_coming_soon.jpg";
+//        File initialFile = new File(path);
+        try {
+            InputStream targetStream = new FileInputStream(path);
+            return targetStream;
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public InputStream ifPhotoExists(String id) {
+        if (employeesDAO.checkExistingEmployeeId(id)) {
+            if (employeesDAO.getEmployeePhoto(id) != null) {
+                return this.getEmployeePhoto(id);
+            } else {
+                return this.gettingPhoto();
+            }
+        } else {
+            return this.gettingPhoto();
+        }
+    }
 }

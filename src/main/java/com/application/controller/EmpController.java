@@ -10,22 +10,33 @@ import com.application.service.impl.DefaultDepartmentService;
 import com.application.service.impl.DefaultEmployeeService;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
+
+import javax.servlet.http.Part;
 
 import static com.application.controller.CoreConstants.EMPLOYEES;
 
+//@MultipartConfig
 public class EmpController implements Controller {
 
     private EmployeeService employeeService = new DefaultEmployeeService();
     private EmployeesDAO employeesDAO = new DefaultEmployeesDAO();
     private DepartmentService departmentService = new DefaultDepartmentService();
     List<DepartmentData> allDepartments = departmentService.getAllDepartments();
+
+    private static final String SAVE_DIR = "uploadFiles";
+
     @Override
     public void processGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String idToEdit = req.getParameter("idToEdit");
+        String idStr = req.getServletPath().substring(req.getServletPath().lastIndexOf('/') + 1);
         EmployeeData currentEmployee = employeeService.getEmployeeById(idToEdit);
 
         if (EMPLOYEES.equals(req.getServletPath())) {
@@ -38,11 +49,22 @@ public class EmpController implements Controller {
             req.setAttribute("currentEmployee", currentEmployee);
             req.getRequestDispatcher("/WEB-INF/jsp/create-edit-employee.jsp").forward(req, resp);
         }
-        if ("/employee/create".equals(req.getServletPath()))
-        {
+        if ("/employee/create".equals(req.getServletPath())) {
             req.setAttribute("departments", allDepartments);
             req.setAttribute("currentEmployee", currentEmployee);
             req.getRequestDispatcher("/WEB-INF/jsp/create-edit-employee.jsp").forward(req, resp);
+        }
+        if (("/employee/photo/" + idStr).equals(req.getServletPath())) {
+            String photoName= idStr.substring(0,idStr.lastIndexOf('.'));
+            InputStream employeePhoto = employeeService.ifPhotoExists(photoName);
+
+            ServletOutputStream outputStream = resp.getOutputStream();
+
+            byte[] buf = new byte[8192];
+            int length;
+            while ((length = employeePhoto.read(buf)) > 0) {
+                outputStream.write(buf, 0, length);
+            }
         }
     }
 
@@ -57,12 +79,35 @@ public class EmpController implements Controller {
             req.setAttribute("employees", leftEmployees);
             req.getRequestDispatcher("/WEB-INF/jsp/employee-list.jsp").forward(req, resp);
         }
+        if ("/employee/edit-photo".equals(req.getServletPath())) {
+            Part filePart = req.getPart("photo");
+            String fileName = filePart.getSubmittedFileName();
+
+            String appPath = req.getServletContext().getRealPath("");
+            String savePath = appPath + SAVE_DIR;
+            File fileSaveDir = new File(savePath);
+
+            if (!fileSaveDir.exists()) {
+                fileSaveDir.mkdir();
+            }
+            String filePath = "/home/diana/Downloads/" + fileName;
+            for (Part part : req.getParts()) {
+                part.write(filePath);
+            }
+
+//            ==========================================
+
+            File savedFile = new File(filePath);
+            FileInputStream fileInputStream = new FileInputStream(savedFile);
+
+            employeesDAO.editEmployeePhoto(fileInputStream, idToEdit);
+            resp.sendRedirect(req.getContextPath() + "/employee/edit?idToEdit=" + idToEdit);
+
+        }
         if ("/employee/edit".equals(req.getServletPath())) {
 
             String email = req.getParameter("empEmail");
             EmployeeData employeeById = employeeService.getEmployeeById(idToEdit);
-
-
             if (employeeService.checkExistingEmployeeEmail(email)) {
                 req.setAttribute("departments", allDepartments);
                 req.setAttribute("wrongEmail", email);
@@ -82,7 +127,7 @@ public class EmpController implements Controller {
         }
         if ("/employee/create".equals(req.getServletPath())) {
             String email = req.getParameter("empEmail");
-            if(employeeService.checkExistingEmployeeEmail(email)) {
+            if (employeeService.checkExistingEmployeeEmail(email)) {
                 req.setAttribute("departments", allDepartments);
                 req.setAttribute("wrongEmail", email);
                 req.setAttribute("createdEmployee", employeeService.convertRequestToEmployee(req));
