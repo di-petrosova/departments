@@ -1,22 +1,19 @@
 package com.application.service;
 
-import com.application.data.DepartmentData;
+import com.application.model.DepartmentModel;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface DepartmentService {
-    List<DepartmentData> getAllDepartments();
+    List<DepartmentModel> getAllDepartments();
 
-    void createDepartment(HttpServletRequest req);
+    int getRandomPK();
 
-    void editDepartment(HttpServletRequest req);
+    int getRandomId();
 
-    String getRandomPK();
+    void createEditDepartment(DepartmentModel department);
 
-    String getRandomId();
+    DepartmentModel getDepartmentForId(int id);
 
-    DepartmentData getDepartmentById(String id);
-
-    List<DepartmentData> removeDepartment(String id);
+    List<DepartmentModel> removeDepartment(String id);
 }

@@ -2,8 +2,14 @@ package com.application.dao.impl;
 
 import com.application.dao.EmployeesDAO;
 import com.application.dao.factory.DBConnectionFactory;
+import com.application.data.EmployeeData;
+import com.application.model.EmployeeModel;
+import com.application.utils.HibernateUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import java.io.InputStream;
 import java.sql.Connection;
@@ -11,176 +17,55 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Map;
+import java.util.List;
 
 public class DefaultEmployeesDAO implements EmployeesDAO {
 
     private static final Logger LOGGER = LogManager.getLogger(DefaultEmployeesDAO.class);
 
     @Override
-    public ResultSet getAllEmployees() {
-        String query = "SELECT * FROM employees";
-        Connection connection = null;
-        Statement statement = null;
-        ResultSet rs = null;
-        try {
-            connection = DBConnectionFactory.establishConnection();
-            statement = connection.createStatement();
-            rs = statement.executeQuery(query);
+    public List<EmployeeModel> getAllEmployees() {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = null;
 
-        } catch (SQLException e) {
-            LOGGER.error("Read from database was failed");
-            throw new RuntimeException(e);
-        }
-        return rs;
+        transaction = session.beginTransaction();
+        List<EmployeeModel> employees = session.createQuery("FROM EmployeeModel").list();
+        session.close();
+        return employees;
     }
 
     @Override
-    public void editEmployee(Map<String, String> employee) {
-        String query = "UPDATE employees SET id=\'" + employee.get("empId") + "\', firstName = \'" + employee.get("empFirstName") +
-                "\', lastName = \'" + employee.get("empLastName") + "\', dateBirth = \'" + employee.get("dateBirth") +
-                "\', age = (SELECT TIMESTAMPDIFF(YEAR, \'" + employee.get("dateBirth") + "\', CURDATE()) AS age WHERE id=\'" + employee.get("empId") +
-                "\'), email = \'" + employee.get("empEmail") + "\', photo = \'" +
-                employee.get("photo") + "\', createdDate = \'" + employee.get("createdDate") + "\', modifiedDate = now(), experience = " +
-                employee.get("empExperience") + ", departmentId = \'" + employee.get("departmentId") + "\' " +
-                "WHERE id=\'" + employee.get("empId") + "\'";
-        try {
-            Connection connection = DBConnectionFactory.establishConnection();
-            Statement statement = connection.createStatement();
-            statement.executeUpdate(query);
-        } catch (SQLException e) {
-            LOGGER.error("Read from database was failed");
-            throw new RuntimeException(e);
-        }
+    public void createUpdateEmployee(EmployeeModel employeeModel) {
+        Transaction transaction;
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        transaction = session.beginTransaction();
+        session.saveOrUpdate(employeeModel);
+        transaction.commit();
+        session.close();
+    }
+
+    public EmployeeModel checkExistingEmployeeEmail(String email) {
+        EmployeeModel existingEmployee;
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Query query = session.createQuery("from EmployeeModel where email=:empEmail");
+        query.setParameter("empEmail", email);
+        existingEmployee = (EmployeeModel) query.uniqueResult();
+        session.close();
+        return existingEmployee;
+    }
+
+    public EmployeeModel getEmployeeForId(int id) {
+        EmployeeModel existingEmployee;
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Query query = session.createQuery("from EmployeeModel where id=:empId");
+        query.setParameter("empId", id);
+        existingEmployee = (EmployeeModel) query.uniqueResult();
+        session.close();
+        return existingEmployee;
     }
 
     @Override
-    public ResultSet getEmployeeForId(String id) {
-        String query = "SELECT * FROM employees WHERE id=\'" + id + "\'";
-        ResultSet rs = null;
-        try {
-            Connection connection = DBConnectionFactory.establishConnection();
-            Statement statement = connection.createStatement();
-            rs = statement.executeQuery(query);
-
-        } catch (SQLException e) {
-            LOGGER.error("Read from database was failed");
-            throw new RuntimeException(e);
-        }
-        return rs;
-    }
-
-    public boolean checkExistingEmployeeEmail(String email) {
-        String query = "SELECT COUNT(*) FROM employees WHERE email = \'" + email + "\'";
-        ResultSet rs = null;
-        int ifExist = 0;
-
-        try {
-            Connection connection = DBConnectionFactory.establishConnection();
-            Statement statement = connection.createStatement();
-            rs = statement.executeQuery(query);
-            rs.next();
-            ifExist = ((Number) rs.getObject(1)).intValue();
-
-        } catch (SQLException e) {
-            LOGGER.error("Read from database was failed", e);
-
-        }
-        return ifExist > 0;
-    }
-
-    public boolean checkExistingEmployeeId(String id) {
-        String query = "SELECT COUNT(*) FROM employees WHERE id = \'" + id + "\'";
-        ResultSet rs = null;
-        int ifExist = 0;
-
-        try {
-            Connection connection = DBConnectionFactory.establishConnection();
-            Statement statement = connection.createStatement();
-            rs = statement.executeQuery(query);
-            rs.next();
-            ifExist = ((Number) rs.getObject(1)).intValue();
-
-        } catch (SQLException e) {
-            LOGGER.error("Read from database was failed", e);
-
-        }
-        return ifExist == 1;
-    }
-
-    @Override
-    public void createEmployee(Map<String, String> employee) {
-        String query = "INSERT employees (id, firstname, lastname, dateBirth, age, email, photo, createdDate, modifiedDate, experience, departmentId)" +
-                " VALUES ('" + employee.get("empId") + "\', \'" + employee.get("empFirstName") +
-                "\', \'" + employee.get("empLastName") + "\', \'" + employee.get("dateBirth") +
-                "\', (SELECT TIMESTAMPDIFF(YEAR, \'" + employee.get("dateBirth") + "\', CURDATE()) AS age), \'" + employee.get("empEmail") + "\', \'" + employee.get("photo") + "\', now(), now(), " +
-                employee.get("empExperience") + ", \'" + employee.get("departmentId") + "\');";
-        try {
-            Connection connection = DBConnectionFactory.establishConnection();
-            Statement statement = connection.createStatement();
-            statement.execute(query);
-
-        } catch (SQLException e) {
-            LOGGER.error("Read from database was failed");
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void removeEmployee(String id) {
-        String query = "DELETE FROM employees WHERE id=\'" + id + "\'";
-        Connection connection = null;
-        Statement statement = null;
-        ResultSet rs = null;
-        try {
-            connection = DBConnectionFactory.establishConnection();
-            statement = connection.createStatement();
-            statement.execute(query);
-        } catch (SQLException e) {
-            LOGGER.error("Delete from database was failed", e);
-        } finally {
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException e) { /* Ignored */}
-            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) { /* Ignored */}
-            }
-        }
-    }
-
-    @Override
-    public void editEmployeePhoto(InputStream inputStream, String id) {
-        String sql = "UPDATE employees SET tempphoto=? WHERE id=?;";
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        try {
-            connection = DBConnectionFactory.establishConnection();
-            preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setBlob(1, inputStream);
-            preparedStatement.setString(2, id);
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (preparedStatement != null) {
-                try {
-                    preparedStatement.close();
-                } catch (SQLException e) { /* Ignored */}
-            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) { /* Ignored */}
-            }
-        }
-    }
-
-    @Override
-    public InputStream getEmployeePhoto(String id) {
+    public InputStream getEmployeePhoto(int id) {
         String sql = "SELECT tempphoto FROM employees WHERE id=?;";
         Connection connection = null;
         PreparedStatement preparedStatement = null;
@@ -188,7 +73,7 @@ public class DefaultEmployeesDAO implements EmployeesDAO {
         try {
             connection = DBConnectionFactory.establishConnection();
             preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, id);
+            preparedStatement.setInt(1, id);
             resultSet = preparedStatement.executeQuery();
             resultSet.next();
             return resultSet.getBinaryStream(1);
@@ -198,22 +83,52 @@ public class DefaultEmployeesDAO implements EmployeesDAO {
             if (resultSet != null) {
                 try {
                     resultSet.close();
-                } catch (SQLException e) { /* Ignored */}
+                } catch (SQLException e) {
+                }
             }
             if (preparedStatement != null) {
                 try {
                     preparedStatement.close();
-                } catch (SQLException e) { /* Ignored */}
+                } catch (SQLException e) {
+                }
             }
             if (connection != null) {
                 try {
                     connection.close();
-                } catch (SQLException e) { /* Ignored */}
+                } catch (SQLException e) {
+                }
             }
         }
     }
 
-    public byte[] gettingEmployeePhoto() {
+    /*@Override
+    public void editEmployeePhoto(InputStream inputStream, int id) {
+        String sql = "UPDATE employees SET tempphoto=? WHERE id=?;";
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = DBConnectionFactory.establishConnection();
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setBlob(1, inputStream);
+            preparedStatement.setInt(2, id);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (preparedStatement != null) {
+                try {
+                    preparedStatement.close();
+                } catch (SQLException e) {   }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {   }
+            }
+        }
+    }*/
+
+   /* public byte[] gettingEmployeePhoto() {
         String query = "SELECT tempphoto FROM employees";
         ResultSet rs = null;
         try {
@@ -231,6 +146,18 @@ public class DefaultEmployeesDAO implements EmployeesDAO {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        //return Base64.getEncoder().encodeToString();
+    }*/
+
+    @Override
+    public void removeEmployee(int id) {
+        Transaction transaction = null;
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        transaction = session.beginTransaction();
+        EmployeeModel employee = session.load(EmployeeModel.class, id);
+        session.delete(employee);
+        transaction.commit();
+        session.close();
     }
+
+
 }

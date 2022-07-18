@@ -3,6 +3,7 @@ package com.application.service.impl;
 import com.application.dao.EmployeesDAO;
 import com.application.dao.impl.DefaultEmployeesDAO;
 import com.application.data.EmployeeData;
+import com.application.model.EmployeeModel;
 import com.application.service.EmployeeService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,13 +16,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class DefaultEmployeeService implements EmployeeService {
 
@@ -29,11 +27,64 @@ public class DefaultEmployeeService implements EmployeeService {
     private EmployeesDAO employeesDAO = new DefaultEmployeesDAO();
 
     @Override
-    public List<EmployeeData> getAllEmployees() {
-        ResultSet rs = employeesDAO.getAllEmployees();
-        return convertToEmployeeList(rs);
+    public List<EmployeeModel> getAllEmployees() {
+        return employeesDAO.getAllEmployees();
     }
 
+    public boolean checkExistingEmployeeEmail(String email) {
+        EmployeeModel employeeModel = employeesDAO.checkExistingEmployeeEmail(email);
+        return employeeModel != null;
+    }
+
+    public void createEditEmployee(EmployeeModel employeeModel) {
+        employeeModel.setAge(getAge(employeeModel));
+        employeesDAO.createUpdateEmployee(employeeModel);
+    }
+
+    private int getAge(EmployeeModel employeeModel) {
+        LocalDate dateBirth = LocalDate.parse(employeeModel.getDateBirth());
+        LocalDate curDate = LocalDate.now();
+        if ((dateBirth != null)) {
+            return Period.between(dateBirth, curDate).getYears();
+        } else {
+            return 0;
+        }
+    }
+
+    public int getRandomId() {
+        int randomId;
+        int intId;
+        do {
+            intId = (int) (Math.random() * 10000);
+            randomId = intId;
+        }
+        while (checkExistingEmployeeId(randomId));
+        return randomId;
+    }
+
+    public boolean checkExistingEmployeeId(int id) {
+        EmployeeModel employeeModel = employeesDAO.getEmployeeForId(id);
+        return employeeModel != null;
+    }
+
+/*    @Override
+    public Map<String, String> convertRequestToMap(HttpServletRequest req) {
+        Map<String, String> employee = new HashMap<>();
+        employee.put("empId", req.getParameter("id"));
+        employee.put("empFirstName", req.getParameter("empFirstName"));
+        employee.put("empLastName", req.getParameter("empLastName"));
+        employee.put("dateBirth", req.getParameter("dateBirth"));
+        employee.put("empAge", req.getParameter("empAge"));
+        employee.put("empEmail", req.getParameter("empEmail"));
+        employee.put("photo", req.getParameter("photo"));
+        employee.put("createdDate", req.getParameter("createdDate"));
+        employee.put("modifiedDate", req.getParameter("modifiedDate"));
+        employee.put("empExperience", req.getParameter("empExperience"));
+        employee.put("departmentId", req.getParameter("departmentId"));
+        employee.put("tempphoto", req.getParameter("tempphoto"));
+        return employee;
+    }*/
+/*
     public List<EmployeeData> convertToEmployeeList(ResultSet resultSet) {
         List<EmployeeData> employeeDataList = new ArrayList<>();
         try {
@@ -58,20 +109,10 @@ public class DefaultEmployeeService implements EmployeeService {
         }
 
         return employeeDataList;
-    }
+    }*/
 
-    @Override
-    public EmployeeData getEmployeeById(String id) {
-        ResultSet resultSet = employeesDAO.getEmployeeForId(id);
-        List<EmployeeData> employeeDataList = convertToEmployeeList(resultSet);
-        if (employeeDataList.isEmpty()) {
-            return null;
-        }
-        return employeeDataList.get(0);
-    }
-
-    @Override
-    public boolean checkExistingDepartmentId(String id) {
+ /*    @Override
+   public boolean checkExistingDepartmentId(String id) {
         ResultSet allEmployees = employeesDAO.getAllEmployees();
         List<EmployeeData> employeeDataList = new ArrayList<>();
         try {
@@ -91,90 +132,44 @@ public class DefaultEmployeeService implements EmployeeService {
         }
 
         return false;
-    }
+    }*/
 
     @Override
-    public Map<String, String> convertRequestToMap(HttpServletRequest req) {
-        Map<String, String> employee = new HashMap<>();
-        employee.put("empId", req.getParameter("id"));
-        employee.put("empFirstName", req.getParameter("empFirstName"));
-        employee.put("empLastName", req.getParameter("empLastName"));
-        employee.put("dateBirth", req.getParameter("dateBirth"));
-        employee.put("empAge", req.getParameter("empAge"));
-        employee.put("empEmail", req.getParameter("empEmail"));
-        employee.put("photo", req.getParameter("photo"));
-        employee.put("createdDate", req.getParameter("createdDate"));
-        employee.put("modifiedDate", req.getParameter("modifiedDate"));
-        employee.put("empExperience", req.getParameter("empExperience"));
-        employee.put("departmentId", req.getParameter("departmentId"));
-        employee.put("tempphoto", req.getParameter("tempphoto"));
-        return employee;
-    }
-
-    @Override
-    public void editEmployee(HttpServletRequest req) {
-        employeesDAO.editEmployee(convertRequestToMap(req));
-    }
-
-    public boolean checkExistingEmployeeEmail(String email) {
-        return employeesDAO.checkExistingEmployeeEmail(email);
-    }
-
-    public String getRandomId() {
-        String randomId;
-        int intId;
-        do {
-            intId = (int) (Math.random() * 10000);
-            randomId = String.valueOf(intId);
-        }
-        while (employeesDAO.checkExistingEmployeeId(randomId));
-        return randomId;
-    }
-
-    @Override
-    public void createEmployee(HttpServletRequest req) {
-        Map<String, String> newEmployee = convertRequestToMap(req);
-        newEmployee.put("empId", getRandomId());
-        employeesDAO.createEmployee(newEmployee);
-    }
-
-    @Override
-    public EmployeeData convertRequestToEmployee(HttpServletRequest req) {
-        EmployeeData employeeData = new EmployeeData();
+    public EmployeeModel convertRequestToEmployee(HttpServletRequest req) {
+        EmployeeModel employeeModel = new EmployeeModel();
         try {
-            employeeData.setEmpId(Integer.parseInt(req.getParameter("id")));
+            employeeModel.setId(Integer.parseInt(req.getParameter("id")));
         } catch (NumberFormatException e) {
 
         }
         try {
-            employeeData.setDepartmentId(Integer.parseInt(req.getParameter("departmentId")));
+            employeeModel.setDepartmentId(Integer.parseInt(req.getParameter("departmentId")));
         } catch (NumberFormatException e) {
 
         }
         try {
-            employeeData.setEmpAge(Integer.parseInt(req.getParameter("empAge")));
+            employeeModel.setAge(Integer.parseInt(req.getParameter("empAge")));
         } catch (NumberFormatException e) {
 
         }
-        employeeData.setEmpFirstName(req.getParameter("empFirstName"));
-        employeeData.setEmpLastName(req.getParameter("empLastName"));
-        employeeData.setDateBirth(req.getParameter("dateBirth"));
-
-        employeeData.setEmpEmail(req.getParameter("empEmail"));
-        employeeData.setPhoto(new File(req.getParameter("photo")));
-        employeeData.setCreatedDate(req.getParameter("createdDate"));
-        employeeData.setModifiedDate(req.getParameter("modifiedDate"));
-        employeeData.setEmpExperience(Boolean.parseBoolean(req.getParameter("empExperience")));
-        return employeeData;
+        employeeModel.setFirstName(req.getParameter("firstName"));
+        employeeModel.setLastName(req.getParameter("lastName"));
+        employeeModel.setDateBirth(req.getParameter("dateBirth"));
+        employeeModel.setEmail(req.getParameter("email"));
+//        employeeData.setPhoto(new File(req.getParameter("photo")));
+//        employeeModel.setCreatedDate(req.getParameter("createdDate"));
+//        employeeModel.setModifiedDate(req.getParameter("modifiedDate"));
+        employeeModel.setExperience(Boolean.parseBoolean(req.getParameter("experience")));
+        return employeeModel;
     }
 
     @Override
-    public List<EmployeeData> removeEmployee(String id) {
+    public List<EmployeeModel> removeEmployee(int id) {
         employeesDAO.removeEmployee(id);
         return getAllEmployees();
     }
 
-    private void saveFile(String id) throws IOException {
+/*    private void saveFile(int id) throws IOException {
         InputStream inputStream = employeesDAO.getEmployeePhoto(id);
         String path = "/home/diana/Downloads/1234.txt";
         File file = new File(path);
@@ -187,18 +182,19 @@ public class DefaultEmployeeService implements EmployeeService {
         int length;
         while ((length = inputStream.read(buf)) > 0) {
             outputStream.write(buf, 0, length);
-        }
+        }*/
+/*
     }
-
     public String gettingEmployeePhoto() {
         return Base64.getEncoder().encodeToString(employeesDAO.gettingEmployeePhoto());
     }
-
-    public InputStream getEmployeePhoto(String id) {
+*/
+/*
+    public InputStream getEmployeePhoto(int id) {
         return employeesDAO.getEmployeePhoto(id);
-    }
+    }*/
 
-    private InputStream gettingPhoto() {
+/*    private InputStream gettingPhoto() {
         String resource = getClass().getClassLoader().getResource("").toString();
         String delete = "WEB-INF/classes/";
         String deleteFile = "file:";
@@ -211,10 +207,9 @@ public class DefaultEmployeeService implements EmployeeService {
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public InputStream ifPhotoExists(String id) {
-        if (employeesDAO.checkExistingEmployeeId(id)) {
+    }*/
+/*    public InputStream ifPhotoExists(int id) {
+        if (employeesDAO.getEmployeeForId(id) != null ) {
             if (employeesDAO.getEmployeePhoto(id) != null) {
                 return this.getEmployeePhoto(id);
             } else {
@@ -223,5 +218,5 @@ public class DefaultEmployeeService implements EmployeeService {
         } else {
             return this.gettingPhoto();
         }
-    }
+    }*/
 }

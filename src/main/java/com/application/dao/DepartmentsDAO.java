@@ -1,20 +1,15 @@
 package com.application.dao;
 
-import java.sql.ResultSet;
-import java.util.Map;
+import com.application.model.DepartmentModel;
+
+import java.util.List;
 
 public interface DepartmentsDAO {
-    ResultSet getAllDepartments();
+    List<DepartmentModel> getAllDepartments();
 
-    void createDepartment(Map<String, String> department);
+    void createEditDepartment(DepartmentModel departmentModel);
 
-    void editDepartment(Map<String, String> department);
-
-    boolean checkExistingDepartmentPK(String pk);
-
-    boolean checkExistingDepartmentId(String id);
-
-    ResultSet getDepartmentForId(String id);
+    DepartmentModel getDepartmentForId(int id);
 
     void removeDepartment(String id);
 }

@@ -18,7 +18,7 @@
         <form action="${pageContext.request.contextPath}/department/create" method="post">
     </c:if>
 
-        <input type="text" id="pk" name="pk" value="${currentDepartment.depPK}" hidden>
+        <input type="text" id="pk" name="pk" value="${currentDepartment.pk}" hidden>
         <input type="text" id="id" name="id" value="${currentDepartment.id}" hidden>
         <p>
             <label for="departmentName">Name</label>

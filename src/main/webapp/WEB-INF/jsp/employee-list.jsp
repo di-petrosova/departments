@@ -51,28 +51,28 @@
     <tbody>
     <c:forEach var="employee" items="${employees}">
         <tr>
-            <td>${employee.empId}</td>
-            <td>${employee.empFirstName}</td>
-            <td>${employee.empLastName}</td>
+            <td>${employee.id}</td>
+            <td>${employee.firstName}</td>
+            <td>${employee.lastName}</td>
             <td>${employee.dateBirth}</td>
-            <td>${employee.empAge}</td>
-            <td>${employee.empEmail}</td>
+            <td>${employee.age}</td>
+            <td>${employee.email}</td>
             <td><img src="${employee.photo}" alt=""></td>
             <td>${employee.createdDate}</td>
             <td>${employee.modifiedDate}</td>
-            <td>${employee.empExperience}</td>
+            <td>${employee.experience}</td>
             <td>${employee.departmentId}</td>
 <%--            <td><img style="width: 100px; height: auto" src="data:image/jpeg;base64,${employee.tempphoto}"/></td>--%>
-            <td><img  style="width: 100px; height: auto" src="${pageContext.request.contextPath}/employee/photo/${employee.empId}.jpeg"/></td>
+            <td><img  style="width: 100px; height: auto" src="${pageContext.request.contextPath}/employee/photo/${employee.id}.jpeg"/></td>
             <td>
                 <form action="${pageContext.request.contextPath}/employee/edit" method="get">
-                    <input name="idToEdit" type="text" value="${employee.empId}" hidden>
+                    <input name="idToEdit" type="text" value="${employee.id}" hidden>
                     <button class="btn btn-primary">Edit</button>
                 </form>
             </td>
             <td>
                 <form action="${pageContext.request.contextPath}/employees" method="post">
-                    <input name="idToRemove" type="text" value="${employee.empId}" hidden>
+                    <input name="idToRemove" type="text" value="${employee.id}" hidden>
                     <button class="btn btn-danger">Remove</button>
                 </form>
             </td>

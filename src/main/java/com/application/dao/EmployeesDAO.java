@@ -1,29 +1,27 @@
 package com.application.dao;
 
+import com.application.data.EmployeeData;
+import com.application.model.EmployeeModel;
+
 import java.io.InputStream;
-import java.sql.ResultSet;
-import java.util.Map;
+import java.util.List;
 
 public interface EmployeesDAO {
 
-    ResultSet getAllEmployees();
+    List<EmployeeModel> getAllEmployees();
 
-    void editEmployee(Map<String, String> employee);
+    void createUpdateEmployee(EmployeeModel employeeModel);
 
-    ResultSet getEmployeeForId(String id);
+    EmployeeModel getEmployeeForId(int id);
 
-    boolean checkExistingEmployeeEmail(String email);
+    EmployeeModel checkExistingEmployeeEmail(String email);
 
-    boolean checkExistingEmployeeId(String id);
+    void removeEmployee(int id);
 
-    void createEmployee(Map<String, String> employee);
+//    void editEmployeePhoto(InputStream inputStream, int id);
 
-    void removeEmployee(String id);
+//    byte[] gettingEmployeePhoto();
 
-    void editEmployeePhoto(InputStream inputStream, String id);
-
-    byte[] gettingEmployeePhoto();
-
-    InputStream getEmployeePhoto(String id);
+    InputStream getEmployeePhoto(int id);
 
 }

@@ -1,40 +1,42 @@
 package com.application.service;
 
 import com.application.data.EmployeeData;
+import com.application.model.EmployeeModel;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.sql.ResultSet;
 import java.util.List;
-import java.util.Map;
 
 public interface EmployeeService {
-    List<EmployeeData> getAllEmployees();
+    List<EmployeeModel> getAllEmployees();
 
-    void editEmployee(HttpServletRequest req);
+    void createEditEmployee(EmployeeModel employeeModel);
 
-    Map<String, String> convertRequestToMap(HttpServletRequest req);
-
-    List<EmployeeData> convertToEmployeeList(ResultSet resultSet);
-
-    EmployeeData getEmployeeById(String id);
-
-    boolean checkExistingDepartmentId(String id);
-
+//   void editEmployee(HttpServletRequest req);
+//
+//    Map<String, String> convertRequestToMap(HttpServletRequest req);
+//
+//    List<EmployeeData> convertToEmployeeList(ResultSet resultSet);
+//
+//    EmployeeData getEmployeeById(String id);
+//
+//    boolean checkExistingDepartmentId(String id);
+//
     boolean checkExistingEmployeeEmail(String email);
 
-    String getRandomId();
+    int getRandomId();
+//
+//    void createEmployee(HttpServletRequest req);
 
-    void createEmployee(HttpServletRequest req);
+    EmployeeModel convertRequestToEmployee(HttpServletRequest req);
 
-    EmployeeData convertRequestToEmployee(HttpServletRequest req);
+    List<EmployeeModel> removeEmployee(int id);
 
-    List<EmployeeData> removeEmployee(String id);
+//    String gettingEmployeePhoto();
 
-    String gettingEmployeePhoto();
+//    InputStream getEmployeePhoto(int id);
 
-    InputStream getEmployeePhoto(String id);
+//    InputStream ifPhotoExists(int id);
 
-    InputStream ifPhotoExists(String id);
+    boolean checkExistingEmployeeId(int id);
 }

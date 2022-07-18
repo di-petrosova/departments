@@ -18,28 +18,28 @@
         </c:if>
 
         <c:if test="${uri eq edit}">
-            <input type="text" id="id" name="id" value="${currentEmployee.empId}" hidden>
+            <input type="text" id="id" name="id" value="${currentEmployee.id}" hidden>
         </c:if>
         <c:if test="${uri eq create}">
             <input type="text" id="id" name="id" value="${employeeId}" hidden>
         </c:if>
         <input type="text" id="createdDate" name="createdDate" value="${currentEmployee.createdDate}" hidden>
         <input type="text" id="modifiedDate" name="modifiedDate" value="${currentEmployee.modifiedDate}" hidden>
-        <input type="text" id="empAge" name="empAge" value="${currentEmployee.empAge}" hidden>
+        <input type="text" id="empAge" name="empAge" value="${currentEmployee.age}" hidden>
         <p>
-            <label for="empFirstName">First Name</label>
-            <c:if test="${uri eq create}"><input type="text" id="empFirstName" name="empFirstName"
-                                                 value="${createdEmployee.empFirstName}"></c:if>
-            <c:if test="${uri eq edit}"><input type="text" id="empFirstName" name="empFirstName"
-                                               value="${currentEmployee.empFirstName}"></c:if>
+            <label for="firstName">First Name</label>
+            <c:if test="${uri eq create}"><input type="text" id="firstName" name="firstName"
+                                                 value="${createdEmployee.firstName}"></c:if>
+            <c:if test="${uri eq edit}"><input type="text" id="firstName" name="firstName"
+                                               value="${currentEmployee.firstName}"></c:if>
         </p>
         <p>
-            <label for="empLastName">Last Name</label>
+            <label for="lastName">Last Name</label>
 
-            <c:if test="${uri eq create}"><input type="text" id="empLastName" name="empLastName"
-                                                 value="${createdEmployee.empLastName}"></c:if>
-            <c:if test="${uri eq edit}"><input type="text" id="empLastName" name="empLastName"
-                                               value="${currentEmployee.empLastName}"></c:if>
+            <c:if test="${uri eq create}"><input type="text" id="lastName" name="lastName"
+                                                 value="${createdEmployee.lastName}"></c:if>
+            <c:if test="${uri eq edit}"><input type="text" id="lastName" name="lastName"
+                                               value="${currentEmployee.lastName}"></c:if>
         </p>
         <p>
             <label for="dateBirth">Date Birth</label>
@@ -55,13 +55,13 @@
             <label for="dateBirth">Email</label>
 
             <c:if test="${uri eq create}">
-                <input type="text" id="empEmail" name="empEmail" value="${createdEmployee.empEmail}">
+                <input type="text" id="email" name="email" value="${createdEmployee.email}">
                 <c:if test="${not empty wrongEmail}">
                     <span>This email ${wrongEmail} is busy</span>
                 </c:if>
             </c:if>
             <c:if test="${uri eq edit}">
-                <input type="text" id="empEmail" name="empEmail" value="${currentEmployee.empEmail}">
+                <input type="text" id="email" name="email" value="${currentEmployee.email}">
                 <c:if test="${not empty wrongEmail}">
                     <span>This email ${wrongEmail} is busy</span>
                 </c:if>
@@ -70,14 +70,14 @@
 
         <c:if test="${uri eq create}">
             <p>
-                <label for="empExperience">Experience</label>
+                <label for="createdEmpExperience">Experience</label>
                 <select name="empExperience" id="createdEmpExperience">
                     <option value="true"
-                            <c:if test="${createdEmployee.empExperience eq true}">selected</c:if>
+                            <c:if test="${createdEmployee.experience eq true}">selected</c:if>
                     >true
                     </option>
                     <option value="false"
-                            <c:if test="${createdEmployee.empExperience eq false}">selected</c:if>
+                            <c:if test="${createdEmployee.experience eq false}">selected</c:if>
                     >false
                     </option>
                 </select>
@@ -86,14 +86,14 @@
         </c:if>
         <c:if test="${uri eq edit}">
             <p>
-                <label for="empExperience">Experience</label>
-                <select name="empExperience" id="empExperience">
+                <label for="experience">Experience</label>
+                <select name="experience" id="experience">
                     <option value="true"
-                            <c:if test="${currentEmployee.empExperience eq true}">selected</c:if>
+                            <c:if test="${currentEmployee.experience eq true}">selected</c:if>
                     >true
                     </option>
                     <option value="false"
-                            <c:if test="${currentEmployee.empExperience eq false}">selected</c:if>
+                            <c:if test="${currentEmployee.experience eq false}">selected</c:if>
                     >false
                     </option>
                 </select>
@@ -141,7 +141,7 @@
     </form>
 
         <c:if test="${uri eq edit}">
-        <form action="${pageContext.request.contextPath}/employee/edit-photo?id=${currentEmployee.empId}" method="post" enctype="multipart/form-data" class="m-5">
+        <form action="${pageContext.request.contextPath}/employee/edit-photo?id=${currentEmployee.id}" method="post" enctype="multipart/form-data" class="m-5">
 
             <p>
                 <label for="photo">Photo</label>

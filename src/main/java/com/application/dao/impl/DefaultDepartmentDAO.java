@@ -1,125 +1,74 @@
 package com.application.dao.impl;
 
 import com.application.dao.DepartmentsDAO;
-import com.application.dao.factory.DBConnectionFactory;
+import com.application.model.DepartmentModel;
+import com.application.utils.HibernateUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Map;
+import java.util.List;
 
 public class DefaultDepartmentDAO implements DepartmentsDAO {
 
     private static final Logger LOGGER = LogManager.getLogger(DefaultDepartmentDAO.class);
 
-    @Override
-    public ResultSet getAllDepartments() {
-        String query = "SELECT * FROM departments";
-        ResultSet rs = null;
-        try {
-            Connection connection = DBConnectionFactory.establishConnection();
-            Statement statement = connection.createStatement();
-            rs = statement.executeQuery(query);
-        } catch (SQLException e) {
-            LOGGER.error("Read from database was failed");
-            throw new RuntimeException(e);
-        }
-        return rs;
+    private static SessionFactory sessionFactory;
 
+    public List<DepartmentModel> getAllDepartments() {
+        sessionFactory = new Configuration().configure().buildSessionFactory();
+        Session session = sessionFactory.openSession();
+        Transaction transaction = null;
+
+        transaction = session.beginTransaction();
+        List<DepartmentModel> departments = session.createQuery("FROM DepartmentModel").list();
+        session.close();
+        return departments;
+    }
+
+    public void createEditDepartment(DepartmentModel departmentModel) {
+        Transaction transaction;
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        transaction = session.beginTransaction();
+        session.saveOrUpdate(departmentModel);
+        transaction.commit();
+        session.close();
     }
 
     @Override
-    public void createDepartment(Map<String, String> department) {
-
-        String query = "INSERT departments (pk, id, name, adress)values (\'" + department.get("pk") + "\',\'" + department.get("id") + "\',\'" + department.get("name") + "\',\'" + department.get("address") + "\')";
-
-        try {
-            Connection connection = DBConnectionFactory.establishConnection();
-            Statement statement = connection.createStatement();
-            statement.execute(query);
-        } catch (SQLException e) {
-            LOGGER.error("Read from database was failed");
-        }
+    public DepartmentModel getDepartmentForId(int id) {
+        DepartmentModel existingDepartment;
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Query query = session.createQuery("from DepartmentModel where id=:depId");
+        query.setParameter("depId", id);
+        existingDepartment = (DepartmentModel) query.uniqueResult();
+        session.close();
+        return existingDepartment;
     }
 
-    @Override
-    public void editDepartment(Map<String, String> department) {
-        String query = "UPDATE departments SET name = \'" + department.get("name") + "\', adress =\'" + department.get("address") + "\'" + " WHERE id='" + department.get("id") + "\'";
-
-        try {
-            Connection connection = DBConnectionFactory.establishConnection();
-            Statement statement = connection.createStatement();
-            statement.execute(query);
-        } catch (SQLException e) {
-            LOGGER.error("Read from database was failed");
-        }
-    }
-
-    public boolean checkExistingDepartmentPK(String pk) {
-        String query = "SELECT COUNT(*) FROM departments where PK = \'" + pk + "\' limit 1";
-        ResultSet rs = null;
-        int ifExist = 0;
-
-
-        try {
-            Connection connection = DBConnectionFactory.establishConnection();
-            Statement statement = connection.createStatement();
-            rs = statement.executeQuery(query);
-            rs.next();
-            ifExist = ((Number) rs.getObject(1)).intValue();
-        } catch (SQLException e) {
-            LOGGER.error("Read from database was failed");
-        }
-        return ifExist == 1;
-    }
-
-    public boolean checkExistingDepartmentId(String id) {
-        String query = "SELECT COUNT(*) FROM departments where id = \'" + id + "\' limit 1";
-        ResultSet rs = null;
-        int ifExist = 0;
-
-        try {
-            Connection connection = DBConnectionFactory.establishConnection();
-            Statement statement = connection.createStatement();
-            rs = statement.executeQuery(query);
-            rs.next();
-            ifExist = ((Number) rs.getObject(2)).intValue();
-
-        } catch (SQLException e) {
-            LOGGER.error("Read from database was failed");
-        }
-        return ifExist == 1;
-    }
-
-    @Override
-    public ResultSet getDepartmentForId(String id) {
-        String query = "SELECT * FROM departments WHERE id=\'" + id + "\'";
-        ResultSet rs = null;
-
-        try {
-            Connection connection = DBConnectionFactory.establishConnection();
-            Statement statement = connection.createStatement();
-            rs = statement.executeQuery(query);
-
-        } catch (SQLException e) {
-            LOGGER.error("Read from database was failed");
-        }
-        return rs;
-    }
 
     @Override
     public void removeDepartment(String id) {
-        String query = "DELETE FROM departments WHERE id=\'" + id + "\'";
-        ResultSet rs = null;
+        Transaction transaction = null;
         try {
-            Connection connection = DBConnectionFactory.establishConnection();
-            Statement statement = connection.createStatement();
-            statement.execute(query);
-        } catch (SQLException e) {
-            LOGGER.error("Remove from database was failed");
+            Session session = HibernateUtil.getSessionFactory().openSession();
+            transaction = session.beginTransaction();
+            DepartmentModel department = session.load(DepartmentModel.class,Integer.valueOf(id));
+            session.delete(department);
+            transaction.commit();
+            session.close();
+
+        } catch (HibernateException e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+
         }
+
     }
 }
