@@ -5,6 +5,8 @@ import org.hibernate.annotations.Formula;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.io.File;
 import java.time.LocalDate;
@@ -35,8 +37,11 @@ public class EmployeeModel {
     private Date modifiedDate;
     @Column(name = "experience")
     private boolean experience;
-    @Column(name = "departmentId")
-    private int departmentId;
+
+    @ManyToOne
+    @JoinColumn(name = "departmentId")
+    private DepartmentModel departmentId;
+
     @Column(name = "tempphoto")
     private String tempphoto;
 
@@ -119,11 +124,11 @@ public class EmployeeModel {
         this.experience = experience;
     }
 
-    public int getDepartmentId() {
+    public DepartmentModel getDepartmentId() {
         return departmentId;
     }
 
-    public void setDepartmentId(int departmentId) {
+    public void setDepartmentId(DepartmentModel departmentId) {
         this.departmentId = departmentId;
     }
 

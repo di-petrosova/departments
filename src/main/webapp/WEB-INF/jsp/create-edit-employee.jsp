@@ -124,7 +124,7 @@
                     <c:forEach items="${departments}" var="department">
 
                         <option value="${department.id}"
-                                <c:if test="${currentEmployee.departmentId eq department.id}">selected</c:if>>
+                                <c:if test="${currentEmployee.departmentId.id eq department.id}">selected</c:if>>
                                 ${department.id}
                         </option>
                     </c:forEach>

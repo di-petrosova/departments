@@ -46,7 +46,9 @@ public class EmpController implements Controller {
 
         if (EMPLOYEES.equals(req.getServletPath())) {
             List<EmployeeModel> allEmployees = employeeService.getAllEmployees();
+            List<DepartmentModel> allDepartments = departmentService.getAllDepartments();
             req.setAttribute("employees", allEmployees);
+            req.setAttribute("departments", allDepartments);
             req.getRequestDispatcher("/WEB-INF/jsp/employee-list.jsp").forward(req, resp);
         }
         if ("/employee/edit".equals(req.getServletPath())) {
@@ -91,6 +93,7 @@ public class EmpController implements Controller {
         if ("/employee/create".equals(req.getServletPath())) {
             String email = req.getParameter("email");
             EmployeeModel employeeModel = new EmployeeModel();
+            DepartmentModel departmentModel = new DepartmentModel();
             if (employeeService.checkExistingEmployeeEmail(email)) {
                 req.setAttribute("departments", allDepartments);
                 req.setAttribute("wrongEmail", email);
@@ -99,6 +102,7 @@ public class EmpController implements Controller {
             } else {
                 int id = employeeService.getRandomId();
                 req.setAttribute("employeeId", id);
+                departmentModel.setId(Integer.parseInt(req.getParameter("departmentId")));
                 employeeModel.setId(id);
                 employeeModel.setFirstName(req.getParameter("firstName"));
                 employeeModel.setLastName(req.getParameter("lastName"));
@@ -107,7 +111,7 @@ public class EmpController implements Controller {
                 employeeModel.setCreatedDate(new Date());
                 employeeModel.setModifiedDate(new Date());
                 employeeModel.setExperience(Boolean.parseBoolean(req.getParameter("experience")));
-                employeeModel.setDepartmentId(Integer.parseInt(req.getParameter("departmentId")));
+                employeeModel.setDepartmentId(departmentModel);
                 employeeService.createEditEmployee(employeeModel);
                 resp.sendRedirect(req.getContextPath() + EMPLOYEES);
             }
@@ -143,15 +147,18 @@ public class EmpController implements Controller {
         if ("/employee/edit".equals(req.getServletPath())) {
             EmployeeModel employeeModel = new EmployeeModel();
             int idToEdit = Integer.parseInt(req.getParameter("id"));
+            DepartmentModel departmentModel = departmentService.getDepartmentForId(Integer.parseInt(req.getParameter("departmentId")));
+
             EmployeeModel currentEmployee = employeesDAO.getEmployeeForId(idToEdit);
             String email = req.getParameter("empEmail");
+
             EmployeeModel employeeById = employeesDAO.getEmployeeForId(idToEdit);
             if (employeeService.checkExistingEmployeeEmail(email)) {
                 req.setAttribute("departments", allDepartments);
                 req.setAttribute("wrongEmail", email);
                 req.setAttribute("currentEmployee", currentEmployee);
                 if (email.equals(employeeById.getEmail())) {
-                    setEmployeeModel(employeeModel, idToEdit, req);
+                    setEmployeeModel(employeeModel, departmentModel, idToEdit, req);
                     employeeService.createEditEmployee(employeeModel);
                     resp.sendRedirect(req.getContextPath() + EMPLOYEES);
                 } else {
@@ -159,14 +166,15 @@ public class EmpController implements Controller {
                 }
             } else {
                 req.setAttribute("employeeId", employeeService.getRandomId());
-                setEmployeeModel(employeeModel, idToEdit, req);
+                setEmployeeModel(employeeModel, departmentModel, idToEdit, req);
                 employeeService.createEditEmployee(employeeModel);
                 resp.sendRedirect(req.getContextPath() + EMPLOYEES);
             }
         }
     }
 
-    private void setEmployeeModel(EmployeeModel employeeModel, int idToEdit, HttpServletRequest req) {
+    private void setEmployeeModel(EmployeeModel employeeModel, DepartmentModel departmentModel, int idToEdit, HttpServletRequest req) {
+//        departmentModel.setId(Integer.parseInt(req.getParameter("departmentId")));
         employeeModel.setId(idToEdit);
         employeeModel.setFirstName(req.getParameter("firstName"));
         employeeModel.setLastName(req.getParameter("lastName"));
@@ -179,6 +187,6 @@ public class EmpController implements Controller {
         }
         employeeModel.setModifiedDate(new Date());
         employeeModel.setExperience(Boolean.parseBoolean(req.getParameter("experience")));
-        employeeModel.setDepartmentId(Integer.parseInt(req.getParameter("departmentId")));
+        employeeModel.setDepartmentId(departmentModel);
     }
 }

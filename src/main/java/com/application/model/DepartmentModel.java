@@ -2,10 +2,14 @@ package com.application.model;
 
 import org.hibernate.annotations.Formula;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.List;
 
 @Entity
 @Table(name = "departments")
@@ -20,6 +24,9 @@ public class DepartmentModel {
     private String name;
     @Column(name = "adress")
     private int address;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "departmentId")
+    private List<EmployeeModel> list;
 
     public DepartmentModel() {
 

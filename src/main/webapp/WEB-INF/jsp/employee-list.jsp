@@ -61,7 +61,13 @@
             <td>${employee.createdDate}</td>
             <td>${employee.modifiedDate}</td>
             <td>${employee.experience}</td>
-            <td>${employee.departmentId}</td>
+            <td>
+                <c:forEach var="subItem" items="${departments}">
+                    <c:if test="${subItem.id == employee.departmentId.id}">
+                        ${subItem.id}
+                    </c:if>
+                </c:forEach>
+            </td>
 <%--            <td><img style="width: 100px; height: auto" src="data:image/jpeg;base64,${employee.tempphoto}"/></td>--%>
             <td><img  style="width: 100px; height: auto" src="${pageContext.request.contextPath}/employee/photo/${employee.id}.jpeg"/></td>
             <td>

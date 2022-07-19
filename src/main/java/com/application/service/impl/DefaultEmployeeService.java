@@ -3,6 +3,7 @@ package com.application.service.impl;
 import com.application.dao.EmployeesDAO;
 import com.application.dao.impl.DefaultEmployeesDAO;
 import com.application.data.EmployeeData;
+import com.application.model.DepartmentModel;
 import com.application.model.EmployeeModel;
 import com.application.service.EmployeeService;
 import org.apache.logging.log4j.LogManager;
@@ -137,13 +138,15 @@ public class DefaultEmployeeService implements EmployeeService {
     @Override
     public EmployeeModel convertRequestToEmployee(HttpServletRequest req) {
         EmployeeModel employeeModel = new EmployeeModel();
+        DepartmentModel departmentModel = new DepartmentModel();
+        departmentModel.setId(Integer.parseInt(req.getParameter("departmentId")));
         try {
             employeeModel.setId(Integer.parseInt(req.getParameter("id")));
         } catch (NumberFormatException e) {
 
         }
         try {
-            employeeModel.setDepartmentId(Integer.parseInt(req.getParameter("departmentId")));
+            employeeModel.setDepartmentId(departmentModel);
         } catch (NumberFormatException e) {
 
         }
