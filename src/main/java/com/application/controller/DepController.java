@@ -18,6 +18,7 @@ import static com.application.controller.CoreConstants.DEPARTMENTS;
 public class DepController implements Controller {
     private DepartmentService departmentService = new DefaultDepartmentService();
     private DepartmentsDAO departmentsDAO = new DefaultDepartmentDAO();
+
     @Override
     public void processGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         DepartmentModel departmentModel = new DepartmentModel();
@@ -28,8 +29,8 @@ public class DepController implements Controller {
             request.getRequestDispatcher("/WEB-INF/jsp/departments-list.jsp").forward(request, response);
         }
 
-       if ("/department/create".equals(request.getServletPath())) {
-           request.getRequestDispatcher("/WEB-INF/jsp/create-edit-department.jsp").forward(request, response);
+        if ("/department/create".equals(request.getServletPath())) {
+            request.getRequestDispatcher("/WEB-INF/jsp/create-edit-department.jsp").forward(request, response);
         }
 
         if ("/department/edit".equals(request.getServletPath())) {

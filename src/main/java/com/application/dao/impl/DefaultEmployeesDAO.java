@@ -1,9 +1,8 @@
 package com.application.dao.impl;
 
 import com.application.dao.EmployeesDAO;
-import com.application.dao.factory.DBConnectionFactory;
-import com.application.data.EmployeeData;
 import com.application.model.EmployeeModel;
+import com.application.model.MediaModel;
 import com.application.utils.HibernateUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,12 +10,6 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 
 public class DefaultEmployeesDAO implements EmployeesDAO {
@@ -65,88 +58,15 @@ public class DefaultEmployeesDAO implements EmployeesDAO {
     }
 
     @Override
-    public InputStream getEmployeePhoto(int id) {
-        String sql = "SELECT tempphoto FROM employees WHERE id=?;";
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        try {
-            connection = DBConnectionFactory.establishConnection();
-            preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setInt(1, id);
-            resultSet = preparedStatement.executeQuery();
-            resultSet.next();
-            return resultSet.getBinaryStream(1);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (resultSet != null) {
-                try {
-                    resultSet.close();
-                } catch (SQLException e) {
-                }
-            }
-            if (preparedStatement != null) {
-                try {
-                    preparedStatement.close();
-                } catch (SQLException e) {
-                }
-            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                }
-            }
-        }
+    public MediaModel getMediaForId(int id) {
+        MediaModel mediaModel;
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Query query = session.createQuery("from MediaModel where id=:id");
+        query.setParameter("id", id);
+        mediaModel = (MediaModel) query.uniqueResult();
+        session.close();
+        return mediaModel;
     }
-
-    /*@Override
-    public void editEmployeePhoto(InputStream inputStream, int id) {
-        String sql = "UPDATE employees SET tempphoto=? WHERE id=?;";
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        try {
-            connection = DBConnectionFactory.establishConnection();
-            preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setBlob(1, inputStream);
-            preparedStatement.setInt(2, id);
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (preparedStatement != null) {
-                try {
-                    preparedStatement.close();
-                } catch (SQLException e) {   }
-            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {   }
-            }
-        }
-    }*/
-
-   /* public byte[] gettingEmployeePhoto() {
-        String query = "SELECT tempphoto FROM employees";
-        ResultSet rs = null;
-        try {
-            Connection connection = DBConnectionFactory.establishConnection();
-            Statement statement = connection.createStatement();
-            rs = statement.executeQuery(query);
-            rs.next();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        try {
-            byte[] imgData = rs.getBytes("tempphoto");
-            return imgData;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }*/
 
     @Override
     public void removeEmployee(int id) {
@@ -158,6 +78,4 @@ public class DefaultEmployeesDAO implements EmployeesDAO {
         transaction.commit();
         session.close();
     }
-
-
 }

@@ -44,7 +44,7 @@ public class RequestMapper extends HttpServlet {
     private String getPureRequestURI(HttpServletRequest req) {
         String requestURI = req.getRequestURI();
         String contextPath = req.getContextPath();
-        if (contextPath!=null) {
+        if (contextPath != null) {
             requestURI = requestURI.substring(contextPath.length());
         }
         return requestURI;

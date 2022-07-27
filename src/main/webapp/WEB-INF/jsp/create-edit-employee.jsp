@@ -108,7 +108,7 @@
                     <c:forEach items="${departments}" var="department">
 
                         <option value="${department.id}"
-                                <c:if test="${createdEmployee.departmentId eq department.id}">selected</c:if>
+                                <c:if test="${createdEmployee.departmentId.id eq department.id}">selected</c:if>
                         >
                                 ${department.id}
                         </option>
@@ -143,11 +143,12 @@
         <c:if test="${uri eq edit}">
         <form action="${pageContext.request.contextPath}/employee/edit-photo?id=${currentEmployee.id}" method="post" enctype="multipart/form-data" class="m-5">
 
+            <input type="text" name="photoId" value="${currentMedia.id}" hidden>
             <p>
                 <label for="photo">Photo</label>
                 <input type="file" id="photo" name="photo" value="${currentEmployee.photo}">
             </p>
-            <button type="submit" class="btn btn-primary">Edit image</button>
+            <button type="submit" class="btn btn-primary">Update image</button>
 
         </form>
         </c:if>

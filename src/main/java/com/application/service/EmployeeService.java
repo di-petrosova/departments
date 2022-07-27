@@ -1,10 +1,10 @@
 package com.application.service;
 
-import com.application.data.EmployeeData;
 import com.application.model.EmployeeModel;
+import com.application.model.MediaModel;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.InputStream;
+import java.io.FileInputStream;
 import java.util.List;
 
 public interface EmployeeService {
@@ -12,31 +12,17 @@ public interface EmployeeService {
 
     void createEditEmployee(EmployeeModel employeeModel);
 
-//   void editEmployee(HttpServletRequest req);
-//
-//    Map<String, String> convertRequestToMap(HttpServletRequest req);
-//
-//    List<EmployeeData> convertToEmployeeList(ResultSet resultSet);
-//
-//    EmployeeData getEmployeeById(String id);
-//
-//    boolean checkExistingDepartmentId(String id);
-//
     boolean checkExistingEmployeeEmail(String email);
 
     int getRandomId();
-//
-//    void createEmployee(HttpServletRequest req);
 
     EmployeeModel convertRequestToEmployee(HttpServletRequest req);
 
     List<EmployeeModel> removeEmployee(int id);
 
-//    String gettingEmployeePhoto();
-
-//    InputStream getEmployeePhoto(int id);
-
-//    InputStream ifPhotoExists(int id);
-
     boolean checkExistingEmployeeId(int id);
+
+    MediaModel saveUpdatePhoto(FileInputStream fileInputStream, int id, int photoId);
+
+    EmployeeModel getEmployeeForId(int id);
 }

@@ -1,15 +1,11 @@
 package com.application.model;
 
-import org.hibernate.annotations.Formula;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.io.File;
-import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -29,8 +25,6 @@ public class EmployeeModel {
     private int age;
     @Column(name = "email", nullable = false)
     private String email;
-    @Column(name = "photo")
-    private String photo;
     @Column(name = "createdDate")
     private Date createdDate;
     @Column(name = "modifiedDate")
@@ -42,8 +36,9 @@ public class EmployeeModel {
     @JoinColumn(name = "departmentId")
     private DepartmentModel departmentId;
 
-    @Column(name = "tempphoto")
-    private String tempphoto;
+    @ManyToOne
+    @JoinColumn(name = "photo", columnDefinition = "longblob")
+    private MediaModel photo;
 
     public int getId() {
         return id;
@@ -92,13 +87,6 @@ public class EmployeeModel {
     public void setEmail(String email) {
         this.email = email;
     }
-    public String getPhoto() {
-        return photo;
-    }
-
-    public void setPhoto(String photo) {
-        this.photo = photo;
-    }
 
     public Date getCreatedDate() {
         return createdDate;
@@ -132,11 +120,11 @@ public class EmployeeModel {
         this.departmentId = departmentId;
     }
 
-    public String getTempphoto() {
-        return tempphoto;
+    public MediaModel getPhoto() {
+        return photo;
     }
 
-    public void setTempphoto(String tempphoto) {
-        this.tempphoto = tempphoto;
+    public void setPhoto(MediaModel photo) {
+        this.photo = photo;
     }
 }

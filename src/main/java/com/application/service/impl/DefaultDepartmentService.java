@@ -1,9 +1,7 @@
 package com.application.service.impl;
 
 import com.application.dao.DepartmentsDAO;
-import com.application.dao.factory.DBConnectionFactory;
 import com.application.dao.impl.DefaultDepartmentDAO;
-import com.application.data.DepartmentData;
 import com.application.model.DepartmentModel;
 import com.application.service.DepartmentService;
 import org.apache.logging.log4j.LogManager;

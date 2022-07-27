@@ -58,7 +58,7 @@ public class DefaultDepartmentDAO implements DepartmentsDAO {
         try {
             Session session = HibernateUtil.getSessionFactory().openSession();
             transaction = session.beginTransaction();
-            DepartmentModel department = session.load(DepartmentModel.class,Integer.valueOf(id));
+            DepartmentModel department = session.load(DepartmentModel.class, Integer.valueOf(id));
             session.delete(department);
             transaction.commit();
             session.close();

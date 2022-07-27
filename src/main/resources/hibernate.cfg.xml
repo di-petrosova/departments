@@ -17,5 +17,6 @@
 
         <mapping class="com.application.model.DepartmentModel"/>
         <mapping class="com.application.model.EmployeeModel"/>
+        <mapping class="com.application.model.MediaModel"/>
     </session-factory>
 </hibernate-configuration>

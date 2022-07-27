@@ -1,9 +1,8 @@
 package com.application.dao;
 
-import com.application.data.EmployeeData;
 import com.application.model.EmployeeModel;
+import com.application.model.MediaModel;
 
-import java.io.InputStream;
 import java.util.List;
 
 public interface EmployeesDAO {
@@ -18,10 +17,6 @@ public interface EmployeesDAO {
 
     void removeEmployee(int id);
 
-//    void editEmployeePhoto(InputStream inputStream, int id);
-
-//    byte[] gettingEmployeePhoto();
-
-    InputStream getEmployeePhoto(int id);
+    MediaModel getMediaForId(int id);
 
 }
