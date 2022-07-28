@@ -2,8 +2,10 @@ package com.application.service.impl;
 
 import com.application.dao.DepartmentsDAO;
 import com.application.dao.impl.DefaultDepartmentDAO;
+import com.application.exceptions.ServiceException;
 import com.application.model.DepartmentModel;
 import com.application.service.DepartmentService;
+import com.application.utils.CustomValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,6 +14,7 @@ import java.util.List;
 public class DefaultDepartmentService implements DepartmentService {
     private static final Logger LOGGER = LogManager.getLogger(DefaultDepartmentDAO.class);
     private DepartmentsDAO departmentsDAO = new DefaultDepartmentDAO();
+    private CustomValidator validator = new CustomValidator();
 
     @Override
     public List<DepartmentModel> getAllDepartments() {
@@ -48,9 +51,10 @@ public class DefaultDepartmentService implements DepartmentService {
         return departmentForId != null;
     }
 
-    public void createEditDepartment(DepartmentModel department) {
+    public void createEditDepartment(DepartmentModel department) throws ServiceException {
         department.setId(getRandomId());
         department.setPk(getRandomPK());
+        validator.validate(department);
         departmentsDAO.createEditDepartment(department);
     }
 

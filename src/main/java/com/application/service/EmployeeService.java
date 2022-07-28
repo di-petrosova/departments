@@ -1,5 +1,6 @@
 package com.application.service;
 
+import com.application.exceptions.ServiceException;
 import com.application.model.EmployeeModel;
 import com.application.model.MediaModel;
 
@@ -10,7 +11,7 @@ import java.util.List;
 public interface EmployeeService {
     List<EmployeeModel> getAllEmployees();
 
-    void createEditEmployee(EmployeeModel employeeModel);
+    void createEditEmployee(EmployeeModel employeeModel) throws ServiceException;
 
     boolean checkExistingEmployeeEmail(String email);
 

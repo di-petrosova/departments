@@ -1,5 +1,6 @@
 package com.application.service;
 
+import com.application.exceptions.ServiceException;
 import com.application.model.DepartmentModel;
 
 import java.util.List;
@@ -11,7 +12,7 @@ public interface DepartmentService {
 
     int getRandomId();
 
-    void createEditDepartment(DepartmentModel department);
+    void createEditDepartment(DepartmentModel department) throws ServiceException;
 
     DepartmentModel getDepartmentForId(int id);
 

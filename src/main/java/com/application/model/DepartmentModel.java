@@ -1,5 +1,9 @@
 package com.application.model;
 
+import net.sf.oval.constraint.Length;
+import net.sf.oval.constraint.NotEmpty;
+import net.sf.oval.constraint.NotNull;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,8 +22,16 @@ public class DepartmentModel {
     private int id;
     @Column(name = "PK", nullable = false, unique = true)
     private int pk;
+
+    @NotNull(message = "Name is Empty")
+    @NotEmpty(message = "Name is Empty")
+    @Length(message = "Name is Too long!", max = 10)
     @Column(name = "name")
     private String name;
+
+    @NotNull(message = "Address is Empty")
+    @NotEmpty(message = "Address is Empty")
+    @Length(message = "Address is Too long!", max = 10)
     @Column(name = "adress")
     private int address;
 

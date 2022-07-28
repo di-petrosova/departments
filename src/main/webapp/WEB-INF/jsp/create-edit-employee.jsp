@@ -9,6 +9,11 @@
 <c:set var="uri" value="${requestScope['javax.servlet.forward.request_uri']}"></c:set>
 <c:set var="edit" value="/newdep/employee/edit"></c:set>
 <c:set var="create" value="/newdep/employee/create"></c:set>
+
+<c:forEach var="error" items="${message}">
+    <p class="error">${error.value}</p>
+</c:forEach>
+
 <c:if test="${uri eq edit}">
 <form action="${pageContext.request.contextPath}/employee/edit" method="post" class="m-5">
     </c:if>

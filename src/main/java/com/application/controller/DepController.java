@@ -2,6 +2,7 @@ package com.application.controller;
 
 import com.application.dao.DepartmentsDAO;
 import com.application.dao.impl.DefaultDepartmentDAO;
+import com.application.exceptions.ServiceException;
 import com.application.model.DepartmentModel;
 import com.application.service.DepartmentService;
 import com.application.service.impl.DefaultDepartmentService;
@@ -44,7 +45,7 @@ public class DepController implements Controller {
     }
 
     @Override
-    public void processPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void processPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ServiceException {
         DepartmentModel departmentModel = new DepartmentModel();
 
 
@@ -58,17 +59,33 @@ public class DepController implements Controller {
 
         if ("/department/create".equals(request.getServletPath())) {
             departmentModel.setName(request.getParameter("name"));
-            departmentModel.setAddress(Integer.parseInt(request.getParameter("address")));
-            departmentService.createEditDepartment(departmentModel);
-            response.sendRedirect(request.getContextPath() + DEPARTMENTS);
+            if(!request.getParameter("address").equals("")) {
+                departmentModel.setAddress(Integer.parseInt(request.getParameter("address")));
+            }
+            try {
+                departmentService.createEditDepartment(departmentModel);
+                response.sendRedirect(request.getContextPath() + DEPARTMENTS);
+            } catch (ServiceException e) {
+                request.setAttribute("message", e.getErrors());
+                request.setAttribute("oneDepartment", departmentModel);
+                request.getRequestDispatcher("/WEB-INF/jsp/create-edit-department.jsp").forward(request, response);
+            }
         }
         if ("/department/edit".equals(request.getServletPath())) {
             int idToEdit = Integer.parseInt(request.getParameter("id"));
             DepartmentModel departmentForId = departmentsDAO.getDepartmentForId(idToEdit);
-            departmentForId.setAddress(Integer.parseInt(request.getParameter("address")));
+            if(!request.getParameter("address").equals("")) {
+                departmentForId.setAddress(Integer.parseInt(request.getParameter("address")));
+            }
             departmentForId.setName(request.getParameter("name"));
-            departmentsDAO.createEditDepartment(departmentForId);
-            response.sendRedirect(request.getContextPath() + DEPARTMENTS);
+            try {
+                departmentService.createEditDepartment(departmentForId);
+                response.sendRedirect(request.getContextPath() + DEPARTMENTS);
+            } catch (ServiceException e) {
+                request.setAttribute("message", e.getErrors());
+                request.setAttribute("oneDepartment", departmentModel);
+                response.sendRedirect(request.getContextPath() + request.getServletPath() + "?idToEdit=" + idToEdit);
+            }
         }
     }
 }

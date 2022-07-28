@@ -4,6 +4,7 @@ import com.application.dao.EmployeesDAO;
 import com.application.dao.MediaDAO;
 import com.application.dao.impl.DefaultEmployeesDAO;
 import com.application.dao.impl.DefaultMediaDAO;
+import com.application.exceptions.ServiceException;
 import com.application.model.DepartmentModel;
 import com.application.model.EmployeeModel;
 import com.application.model.MediaModel;
@@ -80,7 +81,7 @@ public class EmpController implements Controller {
     }
 
     @Override
-    public void processPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void processPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException, ServiceException {
 
         if (EMPLOYEES.equals(req.getServletPath())) {
             int idToRemove = Integer.parseInt(req.getParameter("idToRemove"));
@@ -109,10 +110,18 @@ public class EmpController implements Controller {
                 employeeModel.setEmail(req.getParameter("email"));
                 employeeModel.setCreatedDate(new Date());
                 employeeModel.setModifiedDate(new Date());
-                employeeModel.setExperience(Boolean.parseBoolean(req.getParameter("experience")));
+                employeeModel.setExperience(Boolean.parseBoolean(req.getParameter("empExperience")));
                 employeeModel.setDepartmentId(departmentModel);
-                employeeService.createEditEmployee(employeeModel);
-                resp.sendRedirect(req.getContextPath() + EMPLOYEES);
+                try {
+                    employeeService.createEditEmployee(employeeModel);
+                    resp.sendRedirect(req.getContextPath() + EMPLOYEES);
+                } catch (ServiceException e) {
+                    req.setAttribute("message", e.getErrors());
+                    req.setAttribute("departments", allDepartments);
+                    req.setAttribute("createdEmployee", employeeService.convertRequestToEmployee(req));
+                    req.getRequestDispatcher("/WEB-INF/jsp/create-edit-employee.jsp").forward(req, resp);
+                }
+
             }
         }
 

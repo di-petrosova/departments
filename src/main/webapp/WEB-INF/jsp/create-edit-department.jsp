@@ -10,6 +10,10 @@
 <c:set var="edit" value="/newdep/department/edit"></c:set>
 <c:set var="create" value="/newdep/department/create"></c:set>
 
+<c:forEach var="error" items="${message}">
+    <p class="error">${error.value}</p>
+</c:forEach>
+
     <c:if test="${uri eq edit}">
         <form action="${pageContext.request.contextPath}/department/edit" method="post">
     </c:if>
@@ -25,14 +29,18 @@
 
             <c:if test="${uri eq edit}"><input type="text" id="departmentName" name="name"
                                                value="${currentDepartment.name}"></c:if>
-            <c:if test="${uri eq create}"><input type="text" id="departmentName" name="name"></c:if>
+            <c:if test="${uri eq create}"><input type="text" id="departmentName" name="name"
+                                                 value="${oneDepartment.name}"></c:if>
         </p>
         <p>
             <label for="departmentAddress">Department Address</label>
 
             <c:if test="${uri eq edit}"><input type="text" id="departmentAddress" name="address"
-                                               value="${currentDepartment.address}"></c:if>
-            <c:if test="${uri eq create}"><input type="text" id="departmentAddress" name="address"></c:if>
+                                                <c:if test="${oneDepartment.address ne 0}">value="${oneDepartment.address}"</c:if>>
+            </c:if>
+            <c:if test="${uri eq create}"><input type="text" id="departmentAddress" name="address"
+                                                 <c:if test="${oneDepartment.address ne 0}">value="${oneDepartment.address}"</c:if>>
+            </c:if>
         </p>
 
         <c:if test="${uri eq edit}">

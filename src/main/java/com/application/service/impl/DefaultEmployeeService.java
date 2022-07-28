@@ -4,10 +4,12 @@ import com.application.dao.EmployeesDAO;
 import com.application.dao.MediaDAO;
 import com.application.dao.impl.DefaultEmployeesDAO;
 import com.application.dao.impl.DefaultMediaDAO;
+import com.application.exceptions.ServiceException;
 import com.application.model.DepartmentModel;
 import com.application.model.EmployeeModel;
 import com.application.model.MediaModel;
 import com.application.service.EmployeeService;
+import com.application.utils.CustomValidator;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,6 +27,7 @@ public class DefaultEmployeeService implements EmployeeService {
     private static final Logger LOG = LogManager.getLogger(DefaultEmployeeService.class);
     private EmployeesDAO employeesDAO = new DefaultEmployeesDAO();
     private MediaDAO mediaDAO = new DefaultMediaDAO();
+    private CustomValidator validator = new CustomValidator();
 
     @Override
     public List<EmployeeModel> getAllEmployees() {
@@ -36,13 +39,17 @@ public class DefaultEmployeeService implements EmployeeService {
         return employeeModel != null;
     }
 
-    public void createEditEmployee(EmployeeModel employeeModel) {
+    public void createEditEmployee(EmployeeModel employeeModel) throws ServiceException {
         employeeModel.setAge(getAge(employeeModel));
+        validator.validate(employeeModel);
         employeesDAO.createUpdateEmployee(employeeModel);
     }
 
     private int getAge(EmployeeModel employeeModel) {
-        LocalDate dateBirth = LocalDate.parse(employeeModel.getDateBirth());
+        LocalDate dateBirth = null;
+        if (!employeeModel.getDateBirth().equals("")) {
+            dateBirth = LocalDate.parse(employeeModel.getDateBirth());
+        }
         LocalDate curDate = LocalDate.now();
         if ((dateBirth != null)) {
             return Period.between(dateBirth, curDate).getYears();
@@ -96,7 +103,7 @@ public class DefaultEmployeeService implements EmployeeService {
         employeeModel.setLastName(req.getParameter("lastName"));
         employeeModel.setDateBirth(req.getParameter("dateBirth"));
         employeeModel.setEmail(req.getParameter("email"));
-        employeeModel.setExperience(Boolean.parseBoolean(req.getParameter("experience")));
+        employeeModel.setExperience(Boolean.parseBoolean(req.getParameter("empExperience")));
         return employeeModel;
     }
 

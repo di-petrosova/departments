@@ -1,5 +1,9 @@
 package com.application.model;
 
+import net.sf.oval.constraint.Length;
+import net.sf.oval.constraint.NotEmpty;
+import net.sf.oval.constraint.NotNull;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -15,16 +19,31 @@ public class EmployeeModel {
     @Id
     @Column(name = "id", nullable = false, unique = true)
     private int id;
+
+    @NotNull(message = "first name is Empty")
+    @NotEmpty(message = "first name is Empty.")
+    @Length(message = "first name is Too long!", max = 10)
     @Column(name = "firstName")
     private String firstName;
+
+    @NotNull(message = "last name is Empty")
+    @NotEmpty(message = "last name is Empty.")
+    @Length(message = "last name is Too long!", max = 10)
     @Column(name = "lastName")
     private String lastName;
+
+    @NotNull(message = "dateBirth is Empty")
+    @NotEmpty(message = "dateBirth is Empty.")
     @Column(name = "dateBirth")
     private String dateBirth;
     @Column(name = "age")
     private int age;
+
+    @NotNull(message = "email is Empty")
+    @NotEmpty(message = "email is Empty.")
     @Column(name = "email", nullable = false)
     private String email;
+
     @Column(name = "createdDate")
     private Date createdDate;
     @Column(name = "modifiedDate")

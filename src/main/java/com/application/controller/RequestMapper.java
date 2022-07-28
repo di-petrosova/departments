@@ -1,5 +1,7 @@
 package com.application.controller;
 
+import com.application.exceptions.ServiceException;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -38,7 +40,11 @@ public class RequestMapper extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Controller controller = getController(req);
-        controller.processPost(req, resp);
+        try {
+            controller.processPost(req, resp);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+        }
     }
 
     private String getPureRequestURI(HttpServletRequest req) {
