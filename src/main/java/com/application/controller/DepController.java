@@ -73,6 +73,7 @@ public class DepController {
     public String createdDepartment(@ModelAttribute("departmentForm") DepartmentForm departmentForm,
                                     HttpServletRequest request,
                                     RedirectAttributes redirectAttributes) {
+        DepartmentModel departmentModel = new DepartmentModel();
         departmentModel.setName(departmentForm.getName());
         if (departmentForm.getAddress() != null) {
             departmentModel.setAddress(departmentForm.getAddress());
