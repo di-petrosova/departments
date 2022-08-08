@@ -42,9 +42,7 @@
         <th>
             Department Id
         </th>
-        <th>
-            Temp
-        </th>
+        <th/>
         <th/>
     </tr>
     </thead>
@@ -57,7 +55,8 @@
             <td>${employee.dateBirth}</td>
             <td>${employee.age}</td>
             <td>${employee.email}</td>
-            <td><img src="${employee.photo}" alt=""></td>
+            <td><img style="width: 100px; height: auto"
+                     src="${pageContext.request.contextPath}/employees/photo/${employee.id}.jpeg"/></td>
             <td>${employee.createdDate}</td>
             <td>${employee.modifiedDate}</td>
             <td>${employee.experience}</td>
@@ -68,8 +67,6 @@
                     </c:if>
                 </c:forEach>
             </td>
-<%--            <td><img style="width: 100px; height: auto" src="data:image/jpeg;base64,${employee.tempphoto}"/></td>--%>
-            <td><img  style="width: 100px; height: auto" src="${pageContext.request.contextPath}/employees/photo/${employee.id}.jpeg"/></td>
             <td>
                 <form action="${pageContext.request.contextPath}/employees/edit" method="get">
                     <input name="idToEdit" type="text" value="${employee.id}" hidden>
