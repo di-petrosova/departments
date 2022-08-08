@@ -2,8 +2,6 @@ package com.application.service.impl;
 
 import com.application.dao.EmployeesDAO;
 import com.application.dao.MediaDAO;
-import com.application.dao.impl.DefaultEmployeesDAO;
-import com.application.dao.impl.DefaultMediaDAO;
 import com.application.exceptions.ServiceException;
 import com.application.model.DepartmentModel;
 import com.application.model.EmployeeModel;
@@ -13,6 +11,8 @@ import com.application.utils.CustomValidator;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.FileInputStream;
@@ -22,23 +22,32 @@ import java.time.Period;
 import java.util.Date;
 import java.util.List;
 
+@Service
 public class DefaultEmployeeService implements EmployeeService {
 
     private static final Logger LOG = LogManager.getLogger(DefaultEmployeeService.class);
-    private EmployeesDAO employeesDAO = new DefaultEmployeesDAO();
-    private MediaDAO mediaDAO = new DefaultMediaDAO();
-    private CustomValidator validator = new CustomValidator();
+
+    @Autowired
+    private EmployeesDAO employeesDAO;
+
+    @Autowired
+    private MediaDAO mediaDAO;
+
+    @Autowired
+    private CustomValidator validator;
 
     @Override
     public List<EmployeeModel> getAllEmployees() {
         return employeesDAO.getAllEmployees();
     }
 
+    @Override
     public boolean checkExistingEmployeeEmail(String email) {
         EmployeeModel employeeModel = employeesDAO.checkExistingEmployeeEmail(email);
         return employeeModel != null;
     }
 
+    @Override
     public void createEditEmployee(EmployeeModel employeeModel) throws ServiceException {
         employeeModel.setAge(getAge(employeeModel));
         validator.validate(employeeModel);
@@ -69,11 +78,13 @@ public class DefaultEmployeeService implements EmployeeService {
         return randomId;
     }
 
+    @Override
     public boolean checkExistingEmployeeId(int id) {
         EmployeeModel employeeModel = employeesDAO.getEmployeeForId(id);
         return employeeModel != null;
     }
 
+    @Override
     public EmployeeModel getEmployeeForId(int id) {
         return employeesDAO.getEmployeeForId(id);
     }
@@ -115,14 +126,14 @@ public class DefaultEmployeeService implements EmployeeService {
 
     @Override
     public MediaModel saveUpdatePhoto(FileInputStream inputStream, int id, int photoId) {
-        MediaModel mediaForId = new MediaModel();
+        MediaModel media = new MediaModel();
         if (photoId != 0) {
-            mediaForId.setId(photoId);
+            media.setId(photoId);
         } else {
-            mediaForId.setId(getRandomId());
+            media.setId(getRandomId());
         }
-        mediaForId.setModifiedDate(new Date());
-        mediaForId.setIdEmp(id);
+        media.setModifiedDate(new Date());
+        media.setIdEmp(id);
         mediaDAO.getMediaForId(photoId);
         byte[] bytes = null;
         try {
@@ -130,8 +141,15 @@ public class DefaultEmployeeService implements EmployeeService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        mediaForId.setPhoto(bytes);
-        mediaDAO.saveUpdatePhoto(mediaForId);
-        return mediaForId;
+        media.setPhoto(bytes);
+        mediaDAO.saveUpdatePhoto(media);
+        EmployeeModel employee = employeesDAO.getEmployeeForId(id);
+        employee.setPhoto(media);
+        try {
+            createEditEmployee(employee);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+        }
+        return media;
     }
 }

@@ -2,12 +2,16 @@ package com.application.service.impl;
 
 import com.application.service.MediaService;
 import org.apache.commons.io.IOUtils;
+import org.graalvm.compiler.serviceprovider.ServiceProvider;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+@Service
 public class DefaultMediaService implements MediaService {
     @Override
     public byte[] getDefaultImage() {

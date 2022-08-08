@@ -56,7 +56,7 @@ public class EmployeeModel {
     private DepartmentModel departmentId;
 
     @ManyToOne
-    @JoinColumn(name = "photo", columnDefinition = "longblob")
+    @JoinColumn(name = "photo")
     private MediaModel photo;
 
     public int getId() {

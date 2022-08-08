@@ -2,7 +2,6 @@ package com.application.dao.impl;
 
 import com.application.dao.DepartmentsDAO;
 import com.application.model.DepartmentModel;
-import com.application.utils.HibernateUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.HibernateException;
@@ -10,18 +9,20 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public class DefaultDepartmentDAO implements DepartmentsDAO {
 
     private static final Logger LOGGER = LogManager.getLogger(DefaultDepartmentDAO.class);
 
-    private static SessionFactory sessionFactory;
+    @Autowired
+    private SessionFactory sessionFactory;
 
     public List<DepartmentModel> getAllDepartments() {
-        sessionFactory = new Configuration().configure().buildSessionFactory();
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
 
@@ -33,7 +34,7 @@ public class DefaultDepartmentDAO implements DepartmentsDAO {
 
     public void createEditDepartment(DepartmentModel departmentModel) {
         Transaction transaction;
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session =sessionFactory.openSession();
         transaction = session.beginTransaction();
         session.saveOrUpdate(departmentModel);
         transaction.commit();
@@ -43,7 +44,7 @@ public class DefaultDepartmentDAO implements DepartmentsDAO {
     @Override
     public DepartmentModel getDepartmentForId(int id) {
         DepartmentModel existingDepartment;
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = sessionFactory.openSession();
         Query query = session.createQuery("from DepartmentModel where id=:depId");
         query.setParameter("depId", id);
         existingDepartment = (DepartmentModel) query.uniqueResult();
@@ -56,7 +57,7 @@ public class DefaultDepartmentDAO implements DepartmentsDAO {
     public void removeDepartment(String id) {
         Transaction transaction = null;
         try {
-            Session session = HibernateUtil.getSessionFactory().openSession();
+            Session session = sessionFactory.openSession();
             transaction = session.beginTransaction();
             DepartmentModel department = session.load(DepartmentModel.class, Integer.valueOf(id));
             session.delete(department);

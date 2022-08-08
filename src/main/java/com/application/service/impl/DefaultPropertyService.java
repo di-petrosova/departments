@@ -1,6 +1,7 @@
 package com.application.service.impl;
 
 import com.application.service.PropertyService;
+import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Properties;
 
+@Service
 public class DefaultPropertyService implements PropertyService {
     private static Properties PROPERTIES = null;
     private static final String PROPERTY_FILE = Objects.requireNonNull(DefaultPropertyService.class.getClassLoader().getResource("project.properties")).getPath();

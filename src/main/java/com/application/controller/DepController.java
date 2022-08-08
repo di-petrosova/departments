@@ -1,91 +1,110 @@
 package com.application.controller;
 
 import com.application.dao.DepartmentsDAO;
-import com.application.dao.impl.DefaultDepartmentDAO;
 import com.application.exceptions.ServiceException;
+import com.application.form.DepartmentForm;
 import com.application.model.DepartmentModel;
 import com.application.service.DepartmentService;
-import com.application.service.impl.DefaultDepartmentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import static com.application.controller.CoreConstants.DEPARTMENTS;
 
-public class DepController implements Controller {
-    private DepartmentService departmentService = new DefaultDepartmentService();
-    private DepartmentsDAO departmentsDAO = new DefaultDepartmentDAO();
+@Controller
+@RequestMapping(value = "/departments")
+public class DepController {
+    @Autowired
+    private DepartmentService departmentService;
 
-    @Override
-    public void processGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        DepartmentModel departmentModel = new DepartmentModel();
+    @Autowired
+    private DepartmentsDAO departmentsDAO;
 
-        if (DEPARTMENTS.equals(request.getServletPath())) {
-            List<DepartmentModel> allDepartments = departmentService.getAllDepartments();
-            request.setAttribute("departments", allDepartments);
-            request.getRequestDispatcher("/WEB-INF/jsp/departments-list.jsp").forward(request, response);
-        }
+    DepartmentModel departmentModel = new DepartmentModel();
 
-        if ("/department/create".equals(request.getServletPath())) {
-            request.getRequestDispatcher("/WEB-INF/jsp/create-edit-department.jsp").forward(request, response);
-        }
+    @RequestMapping(method = RequestMethod.GET)
+    public String getDepartments(final Model model) {
+        List<DepartmentModel> allDepartments = departmentService.getAllDepartments();
+        model.addAttribute("departments", allDepartments);
+        return "/WEB-INF/jsp/departments-list.jsp";
+    }
 
-        if ("/department/edit".equals(request.getServletPath())) {
-            int idToEdit = Integer.parseInt(request.getParameter("idToEdit"));
-            DepartmentModel departmentById = departmentService.getDepartmentForId(idToEdit);
+    @RequestMapping(value = "/create", method = RequestMethod.GET)
+    public ModelAndView getCreationPage(@ModelAttribute("departmentForm") DepartmentForm departmentForm) {
+        return new ModelAndView("/WEB-INF/jsp/create-edit-department.jsp", "departmentForm", departmentForm);
+    }
+
+    @RequestMapping(value = "/edit", method = RequestMethod.GET)
+    public ModelAndView getEditPage(@RequestParam(name = "idToEdit") final String id,
+                                    @ModelAttribute("departmentForm") DepartmentForm departmentForm,
+                                    final Model model) {
+        int idToEdit = Integer.parseInt(id);
+        DepartmentModel departmentById = departmentService.getDepartmentForId(idToEdit);
+        if (departmentForm.getId() == 0) {
             if (Objects.nonNull(departmentById)) {
-                request.setAttribute("currentDepartment", departmentService.getDepartmentForId(idToEdit));
+                departmentForm.setId(departmentById.getId());
+                departmentForm.setName(departmentById.getName());
+                departmentForm.setAddress(departmentById.getAddress());
             }
-            request.getRequestDispatcher("/WEB-INF/jsp/create-edit-department.jsp").forward(request, response);
+        }
+        model.addAttribute("edit", Boolean.TRUE);
+        return new ModelAndView("/WEB-INF/jsp/create-edit-department.jsp", "departmentForm", departmentForm);
+    }
+
+    @RequestMapping(method = RequestMethod.POST)
+    public String deleteDepartment(HttpServletRequest request) {
+        String idToRemove = request.getParameter("idToRemove");
+        List<DepartmentModel> leftDepartments = departmentService.removeDepartment(idToRemove);
+        request.setAttribute("departments", leftDepartments);
+        return "/WEB-INF/jsp/departments-list.jsp";
+    }
+
+    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    public String createdDepartment(@ModelAttribute("departmentForm") DepartmentForm departmentForm,
+                                    HttpServletRequest request,
+                                    RedirectAttributes redirectAttributes) {
+        departmentModel.setName(departmentForm.getName());
+        if (departmentForm.getAddress() != null) {
+            departmentModel.setAddress(departmentForm.getAddress());
+        }
+        try {
+            departmentService.createEditDepartment(departmentModel);
+            return "redirect:" + DEPARTMENTS;
+        } catch (ServiceException e) {
+            redirectAttributes.addFlashAttribute("message", e.getErrors());
+            redirectAttributes.addFlashAttribute("departmentForm", departmentForm);
+            return "redirect:" + request.getServletPath();
         }
     }
 
-    @Override
-    public void processPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ServiceException {
-        DepartmentModel departmentModel = new DepartmentModel();
-
-
-        if (DEPARTMENTS.equals(request.getServletPath())) {
-            String idToRemove = request.getParameter("idToRemove");
-            List<DepartmentModel> leftDepartments = departmentService.removeDepartment(idToRemove);
-
-            request.setAttribute("departments", leftDepartments);
-            request.getRequestDispatcher("/WEB-INF/jsp/departments-list.jsp").forward(request, response);
+    @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    public String editDepartment(@RequestParam(name = "id") final String id,
+                                 @ModelAttribute("departmentForm") DepartmentForm departmentForm,
+                                 HttpServletRequest request,
+                                 RedirectAttributes redirectAttributes) {
+        int idToEdit = Integer.parseInt(id);
+        DepartmentModel departmentForId = departmentsDAO.getDepartmentForId(idToEdit);
+        if (!request.getParameter("address").equals("")) {
+            departmentForId.setAddress(departmentForm.getAddress());
         }
-
-        if ("/department/create".equals(request.getServletPath())) {
-            departmentModel.setName(request.getParameter("name"));
-            if(!request.getParameter("address").equals("")) {
-                departmentModel.setAddress(Integer.parseInt(request.getParameter("address")));
-            }
-            try {
-                departmentService.createEditDepartment(departmentModel);
-                response.sendRedirect(request.getContextPath() + DEPARTMENTS);
-            } catch (ServiceException e) {
-                request.setAttribute("message", e.getErrors());
-                request.setAttribute("oneDepartment", departmentModel);
-                request.getRequestDispatcher("/WEB-INF/jsp/create-edit-department.jsp").forward(request, response);
-            }
-        }
-        if ("/department/edit".equals(request.getServletPath())) {
-            int idToEdit = Integer.parseInt(request.getParameter("id"));
-            DepartmentModel departmentForId = departmentsDAO.getDepartmentForId(idToEdit);
-            if(!request.getParameter("address").equals("")) {
-                departmentForId.setAddress(Integer.parseInt(request.getParameter("address")));
-            }
-            departmentForId.setName(request.getParameter("name"));
-            try {
-                departmentService.createEditDepartment(departmentForId);
-                response.sendRedirect(request.getContextPath() + DEPARTMENTS);
-            } catch (ServiceException e) {
-                request.setAttribute("message", e.getErrors());
-                request.setAttribute("oneDepartment", departmentModel);
-                response.sendRedirect(request.getContextPath() + request.getServletPath() + "?idToEdit=" + idToEdit);
-            }
+        departmentForId.setName(departmentForm.getName());
+        try {
+            departmentService.createEditDepartment(departmentForId);
+            return "redirect:" + DEPARTMENTS;
+        } catch (ServiceException e) {
+            redirectAttributes.addFlashAttribute("message", e.getErrors());
+            redirectAttributes.addFlashAttribute("departmentForm", departmentForm);
+            return "redirect:" + request.getServletPath() + "?idToEdit=" + idToEdit;
         }
     }
 }

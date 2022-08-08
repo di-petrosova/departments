@@ -29,7 +29,7 @@
             <td>${department.name}</td>
             <td>${department.address}</td>
             <td>
-                <form action="${pageContext.request.contextPath}/department/edit" method="get">
+                <form action="${pageContext.request.contextPath}/departments/edit" method="get">
                     <input name="idToEdit" type="text" value="${department.id}" hidden>
                     <button type="submit" class="btn btn-primary">Edit</button>
                 </form>
@@ -44,8 +44,9 @@
     </c:forEach>
     </tbody>
 </table>
-<form action="${pageContext.request.contextPath}/department/create" method="get" class="m-5">
+<a href="${pageContext.request.contextPath}/departments/create" class="m-5 btn btn-primary">Create department</a>
+<%--<form action="${pageContext.request.contextPath}/departments/create" method="get" class="m-5">
     <button type="submit" class="btn btn-primary">Create department</button>
-</form>
+</form>--%>
 </body>
 </html>

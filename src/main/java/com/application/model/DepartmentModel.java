@@ -31,7 +31,7 @@ public class DepartmentModel {
 
     @NotNull(message = "Address is Empty")
     @NotEmpty(message = "Address is Empty")
-    @Length(message = "Address is Too long!", max = 10)
+    @Length(message = "Address is Too long!", max = 6)
     @Column(name = "adress")
     private int address;
 

@@ -69,9 +69,9 @@
                 </c:forEach>
             </td>
 <%--            <td><img style="width: 100px; height: auto" src="data:image/jpeg;base64,${employee.tempphoto}"/></td>--%>
-            <td><img  style="width: 100px; height: auto" src="${pageContext.request.contextPath}/employee/photo/${employee.id}.jpeg"/></td>
+            <td><img  style="width: 100px; height: auto" src="${pageContext.request.contextPath}/employees/photo/${employee.id}.jpeg"/></td>
             <td>
-                <form action="${pageContext.request.contextPath}/employee/edit" method="get">
+                <form action="${pageContext.request.contextPath}/employees/edit" method="get">
                     <input name="idToEdit" type="text" value="${employee.id}" hidden>
                     <button class="btn btn-primary">Edit</button>
                 </form>
@@ -86,8 +86,7 @@
     </c:forEach>
     </tbody>
 </table>
-<form action="${pageContext.request.contextPath}/employee/create" method="get" class="m-5">
-    <button type="submit" class="btn btn-primary">Create new employee</button>
-</form>
+<a href="${pageContext.request.contextPath}/employees/create" class="m-5 btn btn-primary">Create new employee</a>
+
 </body>
 </html>
