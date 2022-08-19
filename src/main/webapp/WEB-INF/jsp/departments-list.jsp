@@ -20,12 +20,13 @@
         </th>
         <th/>
         <th/>
+        <th/>
     </tr>
     </thead>
     <tbody>
     <c:forEach var="department" items="${departments}">
         <tr>
-            <td>${department.id}</td>
+            <td class="departmentId">${department.id}</td>
             <td>${department.name}</td>
             <td>${department.address}</td>
             <td>
@@ -40,13 +41,15 @@
                     <button type="submit" class="btn btn-danger">Remove</button>
                 </form>
             </td>
+            <td>
+                <button type="button" class="btn btn btn-primary showEmployees">Show employees</button>
+            </td>
         </tr>
     </c:forEach>
     </tbody>
 </table>
 <a href="${pageContext.request.contextPath}/departments/create" class="m-5 btn btn-primary">Create department</a>
-<%--<form action="${pageContext.request.contextPath}/departments/create" method="get" class="m-5">
-    <button type="submit" class="btn btn-primary">Create department</button>
-</form>--%>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/main.js"></script>
 </body>
 </html>

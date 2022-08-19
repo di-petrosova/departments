@@ -1,5 +1,6 @@
 package com.application.service;
 
+import com.application.data.EmployeeData;
 import com.application.exceptions.ServiceException;
 import com.application.model.DepartmentModel;
 
@@ -17,4 +18,6 @@ public interface DepartmentService {
     DepartmentModel getDepartmentForId(int id);
 
     List<DepartmentModel> removeDepartment(String id);
+
+    List<EmployeeData> getEmployeesForDepartmentId(int id);
 }

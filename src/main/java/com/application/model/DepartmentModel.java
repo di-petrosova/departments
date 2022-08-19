@@ -35,11 +35,19 @@ public class DepartmentModel {
     @Column(name = "adress")
     private int address;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "departmentId")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "departmentId")
     private List<EmployeeModel> list;
 
     public DepartmentModel() {
 
+    }
+
+    public List<EmployeeModel> getList() {
+        return list;
+    }
+
+    public void setList(List<EmployeeModel> list) {
+        this.list = list;
     }
 
     public DepartmentModel(int id, int pk, String name, int address) {

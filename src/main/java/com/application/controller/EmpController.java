@@ -3,6 +3,7 @@ package com.application.controller;
 import com.application.comparator.EmployeeComparator;
 import com.application.dao.EmployeesDAO;
 import com.application.dao.MediaDAO;
+import com.application.data.EmployeeData;
 import com.application.exceptions.ServiceException;
 import com.application.form.EmployeeForm;
 import com.application.form.MediaModelForm;
@@ -12,6 +13,8 @@ import com.application.model.MediaModel;
 import com.application.service.DepartmentService;
 import com.application.service.EmployeeService;
 import com.application.service.MediaService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -31,7 +35,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -58,6 +61,8 @@ public class EmpController {
     @Autowired
     private MediaService mediaService;
 
+    DepartmentModel departmentModel = new DepartmentModel();
+
     private static final String SAVE_DIR = "uploadFiles";
 
     @RequestMapping(method = RequestMethod.GET)
@@ -68,6 +73,22 @@ public class EmpController {
         model.addAttribute("employees", allEmployees);
         model.addAttribute("departments", allDepartments);
         return "/WEB-INF/jsp/employee-list.jsp";
+    }
+
+    @RequestMapping(value = "/departments_employees", method = RequestMethod.GET)
+    @ResponseBody
+    public String getEmployeesJSON(@RequestParam(name = "id") final int id) {
+
+        List<EmployeeData> employees = departmentService.getEmployeesForDepartmentId(id);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = null;
+        try {
+            json = objectMapper.writeValueAsString(employees);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return json;
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.GET)
