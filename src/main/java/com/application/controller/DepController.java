@@ -108,4 +108,8 @@ public class DepController {
             return "redirect:" + request.getServletPath() + "?idToEdit=" + idToEdit;
         }
     }
+
+    public String getSubstring(String str) {
+        return str.substring(5);
+    }
 }
